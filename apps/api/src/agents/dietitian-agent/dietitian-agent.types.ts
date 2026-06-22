@@ -31,6 +31,7 @@ export interface Recipe {
   allergens: string[];
   requiredAppliances: string[];
   prepTimeMinutes: number;
+  cookTimeMinutes: number;
   nutrition: Nutrition;
   ingredients: Ingredient[];
   steps: string[];

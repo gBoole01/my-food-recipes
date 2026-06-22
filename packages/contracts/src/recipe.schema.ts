@@ -22,6 +22,7 @@ export const RecipeSchema = z.object({
   allergens: z.array(z.string()),
   requiredAppliances: z.array(z.string()),
   prepTimeMinutes: z.number().int().positive(),
+  cookTimeMinutes: z.number().int().nonnegative(),
   nutrition: NutritionSchema,
   ingredients: z.array(IngredientSchema).min(1),
   steps: z.array(z.string().min(1)).min(1),

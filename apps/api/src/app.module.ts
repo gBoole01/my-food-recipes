@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DietitianAgentModule } from './agents/dietitian-agent/dietitian-agent.module';
 import { NutritionModule } from './nutrition/nutrition.module';
+import { RecipesModule } from './recipes/recipes.module';
 import { SeasonalityModule } from './seasonality/seasonality.module';
 
 @Module({
@@ -22,6 +23,7 @@ import { SeasonalityModule } from './seasonality/seasonality.module';
     }),
     DietitianAgentModule,
     NutritionModule,
+    RecipesModule,
     SeasonalityModule,
   ],
   controllers: [AppController],

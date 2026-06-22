@@ -12,6 +12,7 @@ const RECIPES: Recipe[] = [
     allergens: [],
     requiredAppliances: ["Four"],
     prepTimeMinutes: 25,
+    cookTimeMinutes: 20,
     nutrition: { calories: 480, protein: 18, carbs: 58, fat: 16 },
     ingredients: [
       { name: "Quinoa", quantity: 100, unit: "g", category: "Féculents & légumineuses" },
@@ -39,6 +40,7 @@ const RECIPES: Recipe[] = [
     allergens: [],
     requiredAppliances: [],
     prepTimeMinutes: 30,
+    cookTimeMinutes: 20,
     nutrition: { calories: 520, protein: 21, carbs: 64, fat: 19 },
     ingredients: [
       { name: "Pois chiches", quantity: 2, unit: "boîte", category: "Féculents & légumineuses" },
@@ -66,6 +68,7 @@ const RECIPES: Recipe[] = [
     allergens: ["poisson"],
     requiredAppliances: ["Four"],
     prepTimeMinutes: 20,
+    cookTimeMinutes: 18,
     nutrition: { calories: 410, protein: 34, carbs: 12, fat: 22 },
     ingredients: [
       { name: "Filet de saumon", quantity: 2, unit: "piece", category: "Poissons" },
