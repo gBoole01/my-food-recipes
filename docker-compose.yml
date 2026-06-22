@@ -1,17 +1,27 @@
-version: '3.8'
+version: "3.8"
 services:
   postgres:
     image: postgres:16
     container_name: food-recipes-postgres
     restart: unless-stopped
     ports:
-      - '5432:5432'
+      - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: food_recipes
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - food-recipes-network
+
+  adminer:
+    image: adminer:latest
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    restart: unless-stopped
     networks:
       - food-recipes-network
 

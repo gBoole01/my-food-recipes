@@ -26,6 +26,8 @@ Un système agentique interroge ensuite une base de connaissance interne (corpus
 
 - [X] **EP1.4 [Seed Recettes] :** Script de peuplement du catalogue initial (30 à 50 recettes complexes). Chaque recette doit contenir ses ingrédients au format métrique pour 1 personne, ses étapes de préparation, ses temps, ses allergènes et ses prérequis matériels durs.
 
+- [] CIQUAL: Remplacez la classification CORGIS par une classification CIQUAL et revoir les autres entités de la base de données.
+
 ### [Sprint 2] Phase 1 : Gestion du Profil, Préférences & Historique Unitaire
 
 - [] **EP1.5 [API Profile CRUD] :** Implémenter l'endpoint `POST /api/profile` pour capturer et figer la configuration initiale issue de l'onboarding frontend.
@@ -69,7 +71,7 @@ $$Sel (g) = \frac{Sodium (mg) \times 2,5}{1000}$$
 
 ### [Sprint 3] Phase 2 : Agenda Temporel Éphémère & Remplacement Visuel
 
-- [] **EP2.4 [UI Agenda Modal UI] :** Développer le panneau de configuration de l'agenda déclenché au clic sur "Generate my meals".
+- [] **EP2.4 [UI Agenda Modal UI] :** Développer le panneau de configuration de l'agenda déclenché au clic sur "Génerer mes repas".
 - [] **EP2.5 [UI Agenda Temporal Filters] :** Implémenter le calcul automatique basé sur l'heure système de l'utilisateur :
 - Si l'application est ouverte après **16h00**, le créneau "Midi" du jour même est automatiquement désactivé et décoché.
 - Si l'application est ouverte après **21h30**, l'interface décoche la journée entière en cours et initialise le point d'entrée au lendemain matin.
@@ -98,6 +100,8 @@ $$Sel (g) = \frac{Sodium (mg) \times 2,5}{1000}$$
 - [] **EPA3.3 [Contextual Taste & Replacement Tuning] :**
 - Configurer l'injection de la liste des titres de recettes aimées de l'utilisateur afin que Gemini s'en serve comme indicateur de profil aromatique préférentiel.
 - Pour le prompt de substitution unitaire (exécuté par Gemini Flash), injecter une consigne restrictive forçant l'IA à s'aligner sur la fourchette de macros et de calories transmise par le backend afin de garantir la cohérence métabolique de la journée de l'utilisateur.
+
+---
 
 Voici la spécification technique complète et détaillée de l'**ÉPIC 4 : BACK-OFFICE (Pilotage, Qualité & Data Cleaning)**.
 
