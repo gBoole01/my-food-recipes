@@ -24,7 +24,7 @@ Un système agentique interroge ensuite une base de connaissance interne (corpus
 - *Cas standard (Lot sur le même mois) :* Récupérer les ingrédients du **mois en cours**, du **mois précédent** et du **mois suivant** pour tolérer les transitions climatiques réelles.
 - *Cas chevauchement (Le planning passe sur un autre mois) :* Réduire la fenêtre stricte au **mois en cours** et au **mois suivant** pour les créneaux basculant sur la nouvelle période.
 
-- [] **EP1.4 [Seed Recettes] :** Script de peuplement du catalogue initial (30 à 50 recettes complexes). Chaque recette doit contenir ses ingrédients au format métrique pour 1 personne, ses étapes de préparation, ses temps, ses allergènes et ses prérequis matériels durs.
+- [X] **EP1.4 [Seed Recettes] :** Script de peuplement du catalogue initial (30 à 50 recettes complexes). Chaque recette doit contenir ses ingrédients au format métrique pour 1 personne, ses étapes de préparation, ses temps, ses allergènes et ses prérequis matériels durs.
 
 ### [Sprint 2] Phase 1 : Gestion du Profil, Préférences & Historique Unitaire
 
