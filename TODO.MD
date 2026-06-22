@@ -14,11 +14,11 @@ Un système agentique interroge ensuite une base de connaissance interne (corpus
 
 ## 📦 ÉPIC 1 : DATA & BACKEND (Normalisation, Algorithmes & Persistance)
 
-*Responsable : Équipe Backend & Data. Stack : Node.js, TypeScript, SQLite (`better-sqlite3`).*
+*Responsable : Équipe Backend & Data. Stack : Node.js, TypeScript, Postgres (`TypeORM`).*
 
 ### [Sprint 1] Phase 0 : Ingestion, Normalisation Métrique & Extension Temporelle
 
-- **EP1.1 [ETL CORGIS & Normalisation] :** Écrire le script d'importation du CSV CORGIS. Convertir toutes les portions américaines floues (cups, slices, spoons) en valeurs absolues standardisées pour **100g** avant l'insertion dans la table `food_nutrition`.
+- **EP1.1 [ETL CORGIS & Normalisation] :** Écrire le script d'importation du CSV CORGIS (`apps/api/seeds/CORGIS Food Dataset.csv`) vers la table `food_nutrition` (TypeORM/Postgres). Le jeu de données est déjà exprimé en valeurs absolues pour **100g** (pas de portions américaines floues à convertir) : le travail consiste à parser les ~36 colonnes de nutriments, gérer les cellules vides/non numériques, et mapper vers le schéma `food_nutrition`.
 - **EP1.2 [Lexique Ingrédients & Traduction] :** Créer la table `ingredient_aliases` et populer la correspondance sémantique pour mapper les ~100 ingrédients du corpus de recettes français vers les IDs nutritionnels rigoureux de la table `food_nutrition`.
 - **EP1.3 [Saisonnalité ADEME Glissante] :** Ingestion des données de saisonnalité ADEME (structure : mois, type, nom). Implémenter la logique de requête de saisonnalité multi-mois :
 - *Cas standard (Lot sur le même mois) :* Récupérer les ingrédients du **mois en cours**, du **mois précédent** et du **mois suivant** pour tolérer les transitions climatiques réelles.

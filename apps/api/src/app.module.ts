@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DietitianAgentModule } from './agents/dietitian-agent/dietitian-agent.module';
+import { NutritionModule } from './nutrition/nutrition.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { DietitianAgentModule } from './agents/dietitian-agent/dietitian-agent.m
       inject: [ConfigService],
     }),
     DietitianAgentModule,
+    NutritionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

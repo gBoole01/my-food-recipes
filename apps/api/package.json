@@ -18,17 +18,20 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "seed:recipes": "ts-node scripts/seed-recipes.ts"
+    "seed:recipes": "ts-node scripts/seed-recipes.ts",
+    "seed:nutrition": "ts-node scripts/import-food-nutrition.ts"
   },
   "dependencies": {
-    "@my-food-recipes/contracts": "workspace:*",
     "@langchain/core": "^0.3.0",
     "@langchain/google-genai": "^0.2.16",
+    "@my-food-recipes/contracts": "workspace:*",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^10.0.0",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/typeorm": "^10.0.2",
+    "csv-parse": "^7.0.0",
+    "dotenv": "^17.4.2",
     "pg": "^8.13.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
