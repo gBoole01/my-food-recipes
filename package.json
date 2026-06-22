@@ -1,0 +1,11 @@
+{
+  "name": "my-food-recipes-fullstack",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev:api": "pnpm --filter api start:dev",
+    "dev:web": "pnpm --filter web dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint"
+  }
+}

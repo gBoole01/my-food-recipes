@@ -1,0 +1,6 @@
+export * from './recipe.schema';
+export * from './profile.schema';
+export * from './recipes.dto';
+export * from './shopping-list.dto';
+export * from './personalization.schema';
+export * from './chat.dto';
