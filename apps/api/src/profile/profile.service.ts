@@ -1,0 +1,248 @@
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DataSource, EntityManager, Repository } from 'typeorm';
+import {
+  Household as HouseholdDto,
+  HouseholdRegistrationRequest,
+  MemberInput,
+  MemberProfile as MemberProfileDto,
+  MemberUpdateRequest,
+} from '@my-food-recipes/contracts';
+import { Household } from './household.entity';
+import { HouseholdEquipment } from './household-equipment.entity';
+import { HouseholdPantryStaple } from './household-pantry-staple.entity';
+import { MemberAllergen } from './member-allergen.entity';
+import { MemberExcludedIngredient } from './member-excluded-ingredient.entity';
+import { MemberProfile } from './member-profile.entity';
+
+@Injectable()
+export class ProfileService {
+  constructor(
+    private readonly dataSource: DataSource,
+    @InjectRepository(Household)
+    private readonly householdRepository: Repository<Household>,
+    @InjectRepository(MemberProfile)
+    private readonly memberRepository: Repository<MemberProfile>,
+  ) {}
+
+  async registerHousehold(
+    input: HouseholdRegistrationRequest,
+  ): Promise<HouseholdDto> {
+    const existing = await this.householdRepository.find({ take: 1 });
+    if (existing.length > 0) {
+      throw new ConflictException('A household is already registered');
+    }
+
+    const householdId = await this.dataSource.transaction(async (manager) => {
+      const household = await manager.save(
+        Household,
+        manager.create(Household, {}),
+      );
+
+      if (input.equipment.length > 0) {
+        await manager.save(
+          HouseholdEquipment,
+          input.equipment.map((equipmentName) =>
+            manager.create(HouseholdEquipment, {
+              householdId: household.id,
+              equipmentName,
+            }),
+          ),
+        );
+      }
+
+      if (input.pantryStaples.length > 0) {
+        await manager.save(
+          HouseholdPantryStaple,
+          input.pantryStaples.map((ingredientName) =>
+            manager.create(HouseholdPantryStaple, {
+              householdId: household.id,
+              ingredientName,
+            }),
+          ),
+        );
+      }
+
+      for (const member of input.members) {
+        await this.createMember(manager, household.id, member);
+      }
+
+      return household.id;
+    });
+
+    return this.getHousehold(householdId);
+  }
+
+  async getHousehold(householdId?: string): Promise<HouseholdDto> {
+    const households = await this.householdRepository.find({
+      where: householdId ? { id: householdId } : {},
+      relations: {
+        equipment: true,
+        pantryStaples: true,
+        members: { allergens: true, excludedIngredients: true },
+      },
+      take: 1,
+    });
+
+    const household = households[0];
+    if (!household) {
+      throw new NotFoundException('No household has been registered yet');
+    }
+
+    return toHouseholdResponse(household);
+  }
+
+  async addMember(input: MemberInput): Promise<MemberProfileDto> {
+    const households = await this.householdRepository.find({ take: 1 });
+    const household = households[0];
+    if (!household) {
+      throw new NotFoundException('No household has been registered yet');
+    }
+
+    const memberId = await this.dataSource.transaction(async (manager) => {
+      const member = await this.createMember(manager, household.id, input);
+      return member.id;
+    });
+
+    return this.getMember(memberId);
+  }
+
+  async updateMember(
+    memberId: string,
+    input: MemberUpdateRequest,
+  ): Promise<MemberProfileDto> {
+    await this.getMemberEntity(memberId);
+
+    await this.dataSource.transaction(async (manager) => {
+      const { allergens, excludedIngredients, ...fields } = input;
+
+      if (Object.keys(fields).length > 0) {
+        await manager.update(MemberProfile, memberId, fields);
+      }
+
+      if (allergens !== undefined) {
+        await manager.delete(MemberAllergen, { memberId });
+        if (allergens.length > 0) {
+          await manager.save(
+            MemberAllergen,
+            allergens.map((allergen) =>
+              manager.create(MemberAllergen, { memberId, allergen }),
+            ),
+          );
+        }
+      }
+
+      if (excludedIngredients !== undefined) {
+        await manager.delete(MemberExcludedIngredient, { memberId });
+        if (excludedIngredients.length > 0) {
+          await manager.save(
+            MemberExcludedIngredient,
+            excludedIngredients.map((ingredientName) =>
+              manager.create(MemberExcludedIngredient, {
+                memberId,
+                ingredientName,
+              }),
+            ),
+          );
+        }
+      }
+    });
+
+    return this.getMember(memberId);
+  }
+
+  async removeMember(memberId: string): Promise<void> {
+    const result = await this.memberRepository.delete(memberId);
+    if (!result.affected) {
+      throw new NotFoundException(`Member ${memberId} not found`);
+    }
+  }
+
+  private async createMember(
+    manager: EntityManager,
+    householdId: string,
+    input: MemberInput,
+  ): Promise<MemberProfile> {
+    const member = await manager.save(
+      MemberProfile,
+      manager.create(MemberProfile, {
+        householdId,
+        name: input.name,
+        primaryGoal: input.primaryGoal,
+        dailyCaloriesTarget: input.dailyCaloriesTarget,
+        maxSodiumMg: input.maxSodiumMg,
+        consumptionTrackingEnabled: input.consumptionTrackingEnabled,
+      }),
+    );
+
+    if (input.allergens.length > 0) {
+      await manager.save(
+        MemberAllergen,
+        input.allergens.map((allergen) =>
+          manager.create(MemberAllergen, { memberId: member.id, allergen }),
+        ),
+      );
+    }
+
+    if (input.excludedIngredients.length > 0) {
+      await manager.save(
+        MemberExcludedIngredient,
+        input.excludedIngredients.map((ingredientName) =>
+          manager.create(MemberExcludedIngredient, {
+            memberId: member.id,
+            ingredientName,
+          }),
+        ),
+      );
+    }
+
+    return member;
+  }
+
+  private async getMemberEntity(memberId: string): Promise<MemberProfile> {
+    const member = await this.memberRepository.findOne({
+      where: { id: memberId },
+      relations: { allergens: true, excludedIngredients: true },
+    });
+    if (!member) {
+      throw new NotFoundException(`Member ${memberId} not found`);
+    }
+    return member;
+  }
+
+  private async getMember(memberId: string): Promise<MemberProfileDto> {
+    return toMemberResponse(await this.getMemberEntity(memberId));
+  }
+}
+
+function toMemberResponse(member: MemberProfile): MemberProfileDto {
+  return {
+    id: member.id,
+    name: member.name,
+    primaryGoal: member.primaryGoal,
+    dailyCaloriesTarget: member.dailyCaloriesTarget,
+    maxSodiumMg: member.maxSodiumMg,
+    consumptionTrackingEnabled: member.consumptionTrackingEnabled,
+    allergens: (member.allergens ?? []).map((a) => a.allergen),
+    excludedIngredients: (member.excludedIngredients ?? []).map(
+      (e) => e.ingredientName,
+    ),
+    createdAt: member.createdAt.toISOString(),
+    updatedAt: member.updatedAt.toISOString(),
+  };
+}
+
+function toHouseholdResponse(household: Household): HouseholdDto {
+  return {
+    id: household.id,
+    equipment: (household.equipment ?? []).map((e) => e.equipmentName),
+    pantryStaples: (household.pantryStaples ?? []).map((p) => p.ingredientName),
+    members: (household.members ?? []).map(toMemberResponse),
+    createdAt: household.createdAt.toISOString(),
+    updatedAt: household.updatedAt.toISOString(),
+  };
+}

@@ -18,3 +18,65 @@ export const UserProfileSchema = z.object({
 });
 
 export type UserProfileInput = z.infer<typeof UserProfileSchema>;
+
+// --- Household / member profile persistence (EP1.5) ---
+// Distinct from UserProfileSchema above: that schema is the ephemeral,
+// single-subject shape used by the legacy chat extraction flow. The schemas
+// below model the persisted domain: one household (shared kitchen, currently
+// app-wide singleton) containing multiple member profiles (individual diet
+// goals/allergens/exclusions).
+
+export const PrimaryGoalSchema = z.enum([
+  'perte_de_poids',
+  'stabilisation',
+  'prise_de_masse',
+  'sante_cardio',
+]);
+export type PrimaryGoal = z.infer<typeof PrimaryGoalSchema>;
+
+export const MemberInputSchema = z.object({
+  name: z.string().min(1),
+  primaryGoal: PrimaryGoalSchema,
+  dailyCaloriesTarget: z.number().int().positive(),
+  maxSodiumMg: z.number().int().positive(),
+  consumptionTrackingEnabled: z.boolean().optional().default(true),
+  allergens: z.array(z.string()).optional().default([]),
+  excludedIngredients: z.array(z.string()).optional().default([]),
+});
+export type MemberInput = z.infer<typeof MemberInputSchema>;
+
+export const MemberUpdateRequestSchema = MemberInputSchema.partial();
+export type MemberUpdateRequest = z.infer<typeof MemberUpdateRequestSchema>;
+
+export const HouseholdRegistrationRequestSchema = z.object({
+  equipment: z.array(z.string()).optional().default([]),
+  pantryStaples: z.array(z.string()).optional().default([]),
+  members: z.array(MemberInputSchema).min(1),
+});
+export type HouseholdRegistrationRequest = z.infer<
+  typeof HouseholdRegistrationRequestSchema
+>;
+
+export const MemberProfileSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  primaryGoal: PrimaryGoalSchema,
+  dailyCaloriesTarget: z.number().int(),
+  maxSodiumMg: z.number().int(),
+  consumptionTrackingEnabled: z.boolean(),
+  allergens: z.array(z.string()),
+  excludedIngredients: z.array(z.string()),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+export type MemberProfile = z.infer<typeof MemberProfileSchema>;
+
+export const HouseholdSchema = z.object({
+  id: z.string(),
+  equipment: z.array(z.string()),
+  pantryStaples: z.array(z.string()),
+  members: z.array(MemberProfileSchema),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+export type Household = z.infer<typeof HouseholdSchema>;
