@@ -5,80 +5,167 @@ export class FoodNutrition {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ name: 'nutrient_data_bank_number', unique: true })
-  nutrientDataBankNumber!: string;
+  @Column({ name: 'alim_code', unique: true })
+  alimCode!: string;
 
-  @Column()
-  category!: string;
+  @Column({ name: 'name_fr' })
+  nameFr!: string;
 
-  @Column()
-  description!: string;
+  @Column({ type: 'varchar', name: 'name_scientific', nullable: true })
+  nameScientific!: string | null;
+
+  @Column({ name: 'group_code' })
+  groupCode!: string;
+
+  @Column({ name: 'group_name' })
+  groupName!: string;
+
+  @Column({ name: 'subgroup_code' })
+  subgroupCode!: string;
+
+  @Column({ name: 'subgroup_name' })
+  subgroupName!: string;
+
+  @Column({ name: 'sub_subgroup_code' })
+  subSubgroupCode!: string;
+
+  @Column({ name: 'sub_subgroup_name' })
+  subSubgroupName!: string;
+
+  @Column('double precision', { name: 'energy_kj', nullable: true })
+  energyKj!: number | null;
+
+  @Column('double precision', { name: 'energy_kcal', nullable: true })
+  energyKcal!: number | null;
+
+  @Column('double precision', { name: 'energy_jones_kj', nullable: true })
+  energyJonesKj!: number | null;
+
+  @Column('double precision', { name: 'energy_jones_kcal', nullable: true })
+  energyJonesKcal!: number | null;
 
   @Column('double precision', { nullable: true })
-  alphaCarotene!: number | null;
+  water!: number | null;
 
-  @Column('double precision', { nullable: true })
-  betaCarotene!: number | null;
-
-  @Column('double precision', { nullable: true })
-  betaCryptoxanthin!: number | null;
-
-  @Column('double precision', { nullable: true })
-  carbohydrate!: number | null;
-
-  @Column('double precision', { nullable: true })
-  cholesterol!: number | null;
-
-  @Column('double precision', { nullable: true })
-  choline!: number | null;
-
-  @Column('double precision', { nullable: true })
-  fiber!: number | null;
-
-  @Column('double precision', { nullable: true })
-  luteinZeaxanthin!: number | null;
-
-  @Column('double precision', { nullable: true })
-  lycopene!: number | null;
-
-  @Column('double precision', { nullable: true })
-  niacin!: number | null;
+  @Column('double precision', { name: 'protein_jones', nullable: true })
+  proteinJones!: number | null;
 
   @Column('double precision', { nullable: true })
   protein!: number | null;
 
   @Column('double precision', { nullable: true })
-  retinol!: number | null;
+  carbohydrate!: number | null;
 
   @Column('double precision', { nullable: true })
-  riboflavin!: number | null;
+  fat!: number | null;
 
-  @Column('double precision', { nullable: true })
-  selenium!: number | null;
-
-  @Column('double precision', { nullable: true })
+  @Column('double precision', { name: 'sugar_total', nullable: true })
   sugarTotal!: number | null;
 
   @Column('double precision', { nullable: true })
-  thiamin!: number | null;
+  fructose!: number | null;
 
   @Column('double precision', { nullable: true })
-  water!: number | null;
+  galactose!: number | null;
 
   @Column('double precision', { nullable: true })
-  monounsaturatedFat!: number | null;
+  glucose!: number | null;
 
   @Column('double precision', { nullable: true })
-  polyunsaturatedFat!: number | null;
+  lactose!: number | null;
 
   @Column('double precision', { nullable: true })
+  maltose!: number | null;
+
+  @Column('double precision', { nullable: true })
+  sucrose!: number | null;
+
+  @Column('double precision', { nullable: true })
+  starch!: number | null;
+
+  @Column('double precision', { nullable: true })
+  fiber!: number | null;
+
+  @Column('double precision', { nullable: true })
+  polyols!: number | null;
+
+  @Column('double precision', { nullable: true })
+  ash!: number | null;
+
+  @Column('double precision', { nullable: true })
+  alcohol!: number | null;
+
+  @Column('double precision', { name: 'organic_acids', nullable: true })
+  organicAcids!: number | null;
+
+  @Column('double precision', { name: 'saturated_fat', nullable: true })
   saturatedFat!: number | null;
 
+  @Column('double precision', { name: 'monounsaturated_fat', nullable: true })
+  monounsaturatedFat!: number | null;
+
+  @Column('double precision', { name: 'polyunsaturated_fat', nullable: true })
+  polyunsaturatedFat!: number | null;
+
+  @Column('double precision', { name: 'fatty_acid_4_0', nullable: true })
+  fattyAcid4_0!: number | null;
+
+  @Column('double precision', { name: 'fatty_acid_6_0', nullable: true })
+  fattyAcid6_0!: number | null;
+
+  @Column('double precision', { name: 'fatty_acid_8_0', nullable: true })
+  fattyAcid8_0!: number | null;
+
+  @Column('double precision', { name: 'fatty_acid_10_0', nullable: true })
+  fattyAcid10_0!: number | null;
+
+  @Column('double precision', { name: 'fatty_acid_12_0', nullable: true })
+  fattyAcid12_0!: number | null;
+
+  @Column('double precision', { name: 'fatty_acid_14_0', nullable: true })
+  fattyAcid14_0!: number | null;
+
+  @Column('double precision', { name: 'fatty_acid_16_0', nullable: true })
+  fattyAcid16_0!: number | null;
+
+  @Column('double precision', { name: 'fatty_acid_18_0', nullable: true })
+  fattyAcid18_0!: number | null;
+
+  @Column('double precision', { name: 'fatty_acid_18_1_oleic', nullable: true })
+  fattyAcid18_1Oleic!: number | null;
+
+  @Column('double precision', { name: 'fatty_acid_18_2_linoleic', nullable: true })
+  fattyAcid18_2Linoleic!: number | null;
+
+  @Column('double precision', {
+    name: 'fatty_acid_18_3_alpha_linolenic',
+    nullable: true,
+  })
+  fattyAcid18_3AlphaLinolenic!: number | null;
+
+  @Column('double precision', {
+    name: 'fatty_acid_20_4_arachidonic',
+    nullable: true,
+  })
+  fattyAcid20_4Arachidonic!: number | null;
+
+  @Column('double precision', { name: 'fatty_acid_20_5_epa', nullable: true })
+  fattyAcid20_5Epa!: number | null;
+
+  @Column('double precision', { name: 'fatty_acid_22_6_dha', nullable: true })
+  fattyAcid22_6Dha!: number | null;
+
   @Column('double precision', { nullable: true })
-  totalLipid!: number | null;
+  cholesterol!: number | null;
+
+  @Column('double precision', { nullable: true })
+  salt!: number | null;
 
   @Column('double precision', { nullable: true })
   calcium!: number | null;
+
+  @Column('double precision', { nullable: true })
+  chloride!: number | null;
 
   @Column('double precision', { nullable: true })
   copper!: number | null;
@@ -87,7 +174,13 @@ export class FoodNutrition {
   iron!: number | null;
 
   @Column('double precision', { nullable: true })
+  iodine!: number | null;
+
+  @Column('double precision', { nullable: true })
   magnesium!: number | null;
+
+  @Column('double precision', { nullable: true })
+  manganese!: number | null;
 
   @Column('double precision', { nullable: true })
   phosphorus!: number | null;
@@ -96,26 +189,80 @@ export class FoodNutrition {
   potassium!: number | null;
 
   @Column('double precision', { nullable: true })
+  selenium!: number | null;
+
+  @Column('double precision', { nullable: true })
   sodium!: number | null;
 
   @Column('double precision', { nullable: true })
   zinc!: number | null;
 
-  @Column('double precision', { nullable: true })
+  @Column('double precision', { name: 'vitamin_a_rae', nullable: true })
   vitaminARae!: number | null;
 
   @Column('double precision', { nullable: true })
-  vitaminB12!: number | null;
+  retinol!: number | null;
 
-  @Column('double precision', { nullable: true })
-  vitaminB6!: number | null;
+  @Column('double precision', { name: 'beta_carotene', nullable: true })
+  betaCarotene!: number | null;
 
-  @Column('double precision', { nullable: true })
-  vitaminC!: number | null;
+  @Column('double precision', { name: 'vitamin_d', nullable: true })
+  vitaminD!: number | null;
 
-  @Column('double precision', { nullable: true })
+  @Column('double precision', { name: 'vitamin_d2', nullable: true })
+  vitaminD2!: number | null;
+
+  @Column('double precision', { name: 'vitamin_d3', nullable: true })
+  vitaminD3!: number | null;
+
+  @Column('double precision', { name: 'alpha_tocopherol', nullable: true })
+  alphaTocopherol!: number | null;
+
+  @Column('double precision', { name: 'vitamin_e', nullable: true })
   vitaminE!: number | null;
 
-  @Column('double precision', { nullable: true })
-  vitaminK!: number | null;
+  @Column('double precision', { name: 'vitamin_k1', nullable: true })
+  vitaminK1!: number | null;
+
+  @Column('double precision', { name: 'vitamin_k2', nullable: true })
+  vitaminK2!: number | null;
+
+  @Column('double precision', { name: 'vitamin_c', nullable: true })
+  vitaminC!: number | null;
+
+  @Column('double precision', { name: 'vitamin_b1', nullable: true })
+  vitaminB1!: number | null;
+
+  @Column('double precision', { name: 'vitamin_b2', nullable: true })
+  vitaminB2!: number | null;
+
+  @Column('double precision', { name: 'vitamin_b3', nullable: true })
+  vitaminB3!: number | null;
+
+  @Column('double precision', { name: 'vitamin_b5', nullable: true })
+  vitaminB5!: number | null;
+
+  @Column('double precision', { name: 'vitamin_b6', nullable: true })
+  vitaminB6!: number | null;
+
+  @Column('double precision', { name: 'vitamin_b9_dfe', nullable: true })
+  vitaminB9Dfe!: number | null;
+
+  @Column('double precision', { name: 'vitamin_b9', nullable: true })
+  vitaminB9!: number | null;
+
+  @Column('double precision', { name: 'folates_intrinsic', nullable: true })
+  folatesIntrinsic!: number | null;
+
+  @Column('double precision', {
+    name: 'folic_acid_fortification',
+    nullable: true,
+  })
+  folicAcidFortification!: number | null;
+
+  @Column('double precision', { name: 'vitamin_b12', nullable: true })
+  vitaminB12!: number | null;
+
+  @Column({ type: 'varchar', name: 'jones_factor', nullable: true })
+  jonesFactor!: string | null;
 }

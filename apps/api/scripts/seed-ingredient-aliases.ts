@@ -18,17 +18,17 @@ async function main(): Promise<void> {
 
   const foodNutritionRepository = dataSource.getRepository(FoodNutrition);
   const foodNutritionRows = await foodNutritionRepository.find({
-    select: ['id', 'nutrientDataBankNumber'],
+    select: ['id', 'alimCode'],
   });
-  const idByNdbNumber = new Map(
-    foodNutritionRows.map((row) => [row.nutrientDataBankNumber, row.id]),
+  const idByAlimCode = new Map(
+    foodNutritionRows.map((row) => [row.alimCode, row.id]),
   );
 
   const rows: Partial<IngredientAlias>[] = [];
   const unresolved: string[] = [];
 
   for (const entry of INGREDIENT_ALIAS_MAPPING) {
-    if (entry.ndbNumber === null) {
+    if (entry.alimCode === null) {
       rows.push({
         alias: entry.alias,
         foodNutritionId: null,
@@ -37,9 +37,9 @@ async function main(): Promise<void> {
       continue;
     }
 
-    const foodNutritionId = idByNdbNumber.get(entry.ndbNumber);
+    const foodNutritionId = idByAlimCode.get(entry.alimCode);
     if (!foodNutritionId) {
-      unresolved.push(`${entry.alias} (NDB ${entry.ndbNumber})`);
+      unresolved.push(`${entry.alias} (alim_code ${entry.alimCode})`);
       continue;
     }
 
@@ -52,7 +52,7 @@ async function main(): Promise<void> {
 
   if (unresolved.length > 0) {
     console.error(
-      `Could not resolve NDB number to a food_nutrition row for: ${unresolved.join(', ')}. Run seed:nutrition first.`,
+      `Could not resolve alim_code to a food_nutrition row for: ${unresolved.join(', ')}. Run seed:nutrition first.`,
     );
     await dataSource.destroy();
     process.exit(1);
