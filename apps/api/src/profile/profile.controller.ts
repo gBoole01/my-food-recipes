@@ -13,6 +13,7 @@ import {
   MemberInputSchema,
   MemberUpdateRequestSchema,
   PantryPatchRequestSchema,
+  RecipeFeedbackRequestSchema,
   RestrictionsPatchRequestSchema,
 } from '@my-food-recipes/contracts';
 import { ProfileService } from './profile.service';
@@ -72,5 +73,14 @@ export class ProfileController {
   ) {
     const input = RestrictionsPatchRequestSchema.parse(body);
     return this.profileService.updateRestrictions(memberId, input);
+  }
+
+  @Post('members/:memberId/feedback')
+  async recordFeedback(
+    @Param('memberId') memberId: string,
+    @Body() body: unknown,
+  ) {
+    const input = RecipeFeedbackRequestSchema.parse(body);
+    return this.profileService.recordFeedback(memberId, input);
   }
 }

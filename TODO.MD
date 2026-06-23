@@ -37,7 +37,10 @@ Un système agentique interroge ensuite une base de connaissance interne (corpus
   - **Conséquence pour EP1.6** : les endpoints de patch granulaire doivent suivre ce même découpage foyer/membre plutôt que le `/api/profile/restrictions` plat — `equipment`/`pantry` restent au niveau foyer (singleton, pas d'id), `restrictions` doit être scopé par membre (`/api/profile/members/:memberId/restrictions`), puisque allergènes et exclusions sont personnels.
 
 - [x] **EP1.6 [API Profile Patch] :** Créer les endpoints REST granulaires (`PATCH /api/profile/equipment`, `/api/profile/restrictions`, `/api/profile/pantry`) pour permettre des modifications à la volée du contexte utilisateur sans réinitialiser son profil.
-- [] **EP1.7 [API Feedback Volatile] :** Développer l'endpoint `POST /api/profile/feedback` enregistrant les votes (`like` / `dislike`) par couple `(user_id, recipe_id)` dans la table `recipe_feedbacks`.
+- [X] **EP1.7 [API Feedback Volatile] :** Implémenté en `POST /api/profile/members/:memberId/feedback` plutôt que le `/api/profile/feedback` à plat avec `(user_id, recipe_id)` initialement spécifié — écart volontaire, dans la continuité directe de la correction déjà actée par EP1.6 :
+  - Le ticket d'origine référençait un `user_id` qui n'a jamais existé dans le schéma (households/member_profiles depuis EP1.5) ; le vote est personnel à un membre, donc la clé est `(member_id, recipe_id)`.
+  - La route est imbriquée sous `/api/profile/members/:memberId/feedback`, suivant la convention déjà établie par `/api/profile/members/:memberId/restrictions` (EP1.6) pour les ressources scopées au membre, plutôt qu'une route plate.
+  - La table `recipe_feedbacks` a une clé primaire composite `(member_id, recipe_id)` (même pattern que `member_allergens`/`member_excluded_ingredients`) et une sémantique d'**upsert** : revoter écrase le vote existant, revoter identique est un no-op — pas d'historique append-only.
 
 ### [Sprint 3] Phase 2 : Moteur de Filtrage Anti-Hallucination & Fallback
 

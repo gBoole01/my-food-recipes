@@ -13,14 +13,18 @@ import {
   MemberProfile as MemberProfileDto,
   MemberUpdateRequest,
   PantryPatchRequest,
+  RecipeFeedback as RecipeFeedbackDto,
+  RecipeFeedbackRequest,
   RestrictionsPatchRequest,
 } from '@my-food-recipes/contracts';
+import { Recipe } from '../recipes/recipe.entity';
 import { Household } from './household.entity';
 import { HouseholdEquipment } from './household-equipment.entity';
 import { HouseholdPantryStaple } from './household-pantry-staple.entity';
 import { MemberAllergen } from './member-allergen.entity';
 import { MemberExcludedIngredient } from './member-excluded-ingredient.entity';
 import { MemberProfile } from './member-profile.entity';
+import { RecipeFeedback } from './recipe-feedback.entity';
 
 @Injectable()
 export class ProfileService {
@@ -30,6 +34,10 @@ export class ProfileService {
     private readonly householdRepository: Repository<Household>,
     @InjectRepository(MemberProfile)
     private readonly memberRepository: Repository<MemberProfile>,
+    @InjectRepository(Recipe)
+    private readonly recipeRepository: Repository<Recipe>,
+    @InjectRepository(RecipeFeedback)
+    private readonly recipeFeedbackRepository: Repository<RecipeFeedback>,
   ) {}
 
   async registerHousehold(
@@ -245,6 +253,30 @@ export class ProfileService {
     return this.getMember(memberId);
   }
 
+  async recordFeedback(
+    memberId: string,
+    input: RecipeFeedbackRequest,
+  ): Promise<RecipeFeedbackDto> {
+    await this.getMemberEntity(memberId);
+
+    const recipe = await this.recipeRepository.findOne({
+      where: { id: input.recipeId },
+    });
+    if (!recipe) {
+      throw new NotFoundException(`Recipe ${input.recipeId} not found`);
+    }
+
+    await this.recipeFeedbackRepository.upsert(
+      { memberId, recipeId: input.recipeId, vote: input.vote },
+      ['memberId', 'recipeId'],
+    );
+
+    const feedback = await this.recipeFeedbackRepository.findOneOrFail({
+      where: { memberId, recipeId: input.recipeId },
+    });
+    return toFeedbackResponse(feedback);
+  }
+
   private async getHouseholdEntity(): Promise<Household> {
     const households = await this.householdRepository.find({ take: 1 });
     const household = households[0];
@@ -325,6 +357,16 @@ function toMemberResponse(member: MemberProfile): MemberProfileDto {
     ),
     createdAt: member.createdAt.toISOString(),
     updatedAt: member.updatedAt.toISOString(),
+  };
+}
+
+function toFeedbackResponse(feedback: RecipeFeedback): RecipeFeedbackDto {
+  return {
+    memberId: feedback.memberId,
+    recipeId: feedback.recipeId,
+    vote: feedback.vote,
+    createdAt: feedback.createdAt.toISOString(),
+    updatedAt: feedback.updatedAt.toISOString(),
   };
 }
 

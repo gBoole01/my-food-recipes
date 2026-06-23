@@ -2,6 +2,7 @@ import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { Recipe } from '../recipes/recipe.entity';
 import { Household } from './household.entity';
 import { HouseholdEquipment } from './household-equipment.entity';
 import { HouseholdPantryStaple } from './household-pantry-staple.entity';
@@ -9,6 +10,7 @@ import { MemberAllergen } from './member-allergen.entity';
 import { MemberExcludedIngredient } from './member-excluded-ingredient.entity';
 import { MemberProfile } from './member-profile.entity';
 import { ProfileService } from './profile.service';
+import { RecipeFeedback } from './recipe-feedback.entity';
 
 function fakeMember(overrides: Partial<MemberProfile> = {}): MemberProfile {
   return {
@@ -64,10 +66,25 @@ function fakeHousehold(overrides: Partial<Household> = {}): Household {
   };
 }
 
+function fakeFeedback(overrides: Partial<RecipeFeedback> = {}): RecipeFeedback {
+  return {
+    memberId: 'member-1',
+    recipeId: 'rec_chicken_curry_01',
+    member: undefined as never,
+    recipe: undefined as never,
+    vote: 'like',
+    createdAt: new Date('2026-01-01T00:00:00.000Z'),
+    updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+    ...overrides,
+  };
+}
+
 describe('ProfileService', () => {
   let service: ProfileService;
   let householdRepository: { find: jest.Mock };
   let memberRepository: { findOne: jest.Mock; delete: jest.Mock };
+  let recipeRepository: { findOne: jest.Mock };
+  let recipeFeedbackRepository: { upsert: jest.Mock; findOneOrFail: jest.Mock };
   let dataSource: { transaction: jest.Mock };
   let manager: {
     create: jest.Mock;
@@ -94,6 +111,8 @@ describe('ProfileService', () => {
 
     householdRepository = { find: jest.fn() };
     memberRepository = { findOne: jest.fn(), delete: jest.fn() };
+    recipeRepository = { findOne: jest.fn() };
+    recipeFeedbackRepository = { upsert: jest.fn(), findOneOrFail: jest.fn() };
 
     const module = await Test.createTestingModule({
       providers: [
@@ -106,6 +125,14 @@ describe('ProfileService', () => {
         {
           provide: getRepositoryToken(MemberProfile),
           useValue: memberRepository,
+        },
+        {
+          provide: getRepositoryToken(Recipe),
+          useValue: recipeRepository,
+        },
+        {
+          provide: getRepositoryToken(RecipeFeedback),
+          useValue: recipeFeedbackRepository,
         },
       ],
     }).compile();
@@ -403,6 +430,108 @@ describe('ProfileService', () => {
       ).rejects.toBeInstanceOf(NotFoundException);
 
       expect(dataSource.transaction).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('recordFeedback', () => {
+    it('creates a new vote via upsert', async () => {
+      memberRepository.findOne.mockResolvedValueOnce(fakeMember());
+      recipeRepository.findOne.mockResolvedValueOnce({
+        id: 'rec_chicken_curry_01',
+      });
+      recipeFeedbackRepository.findOneOrFail.mockResolvedValueOnce(
+        fakeFeedback(),
+      );
+
+      const result = await service.recordFeedback('member-1', {
+        recipeId: 'rec_chicken_curry_01',
+        vote: 'like',
+      });
+
+      expect(recipeFeedbackRepository.upsert).toHaveBeenCalledWith(
+        {
+          memberId: 'member-1',
+          recipeId: 'rec_chicken_curry_01',
+          vote: 'like',
+        },
+        ['memberId', 'recipeId'],
+      );
+      expect(result).toEqual({
+        memberId: 'member-1',
+        recipeId: 'rec_chicken_curry_01',
+        vote: 'like',
+        createdAt: '2026-01-01T00:00:00.000Z',
+        updatedAt: '2026-01-01T00:00:00.000Z',
+      });
+    });
+
+    it('overwrites an existing vote', async () => {
+      memberRepository.findOne.mockResolvedValueOnce(fakeMember());
+      recipeRepository.findOne.mockResolvedValueOnce({
+        id: 'rec_chicken_curry_01',
+      });
+      recipeFeedbackRepository.findOneOrFail.mockResolvedValueOnce(
+        fakeFeedback({ vote: 'dislike' }),
+      );
+
+      const result = await service.recordFeedback('member-1', {
+        recipeId: 'rec_chicken_curry_01',
+        vote: 'dislike',
+      });
+
+      expect(recipeFeedbackRepository.upsert).toHaveBeenCalledWith(
+        {
+          memberId: 'member-1',
+          recipeId: 'rec_chicken_curry_01',
+          vote: 'dislike',
+        },
+        ['memberId', 'recipeId'],
+      );
+      expect(result.vote).toBe('dislike');
+    });
+
+    it('resubmitting the same vote returns the same state as a no-op', async () => {
+      memberRepository.findOne.mockResolvedValueOnce(fakeMember());
+      recipeRepository.findOne.mockResolvedValueOnce({
+        id: 'rec_chicken_curry_01',
+      });
+      recipeFeedbackRepository.findOneOrFail.mockResolvedValueOnce(
+        fakeFeedback(),
+      );
+
+      const result = await service.recordFeedback('member-1', {
+        recipeId: 'rec_chicken_curry_01',
+        vote: 'like',
+      });
+
+      expect(result.vote).toBe('like');
+    });
+
+    it('throws not found for an unknown member', async () => {
+      memberRepository.findOne.mockResolvedValueOnce(null);
+
+      await expect(
+        service.recordFeedback('missing', {
+          recipeId: 'rec_chicken_curry_01',
+          vote: 'like',
+        }),
+      ).rejects.toBeInstanceOf(NotFoundException);
+
+      expect(recipeFeedbackRepository.upsert).not.toHaveBeenCalled();
+    });
+
+    it('throws not found for an unknown recipe', async () => {
+      memberRepository.findOne.mockResolvedValueOnce(fakeMember());
+      recipeRepository.findOne.mockResolvedValueOnce(null);
+
+      await expect(
+        service.recordFeedback('member-1', {
+          recipeId: 'missing-recipe',
+          vote: 'like',
+        }),
+      ).rejects.toBeInstanceOf(NotFoundException);
+
+      expect(recipeFeedbackRepository.upsert).not.toHaveBeenCalled();
     });
   });
 });
