@@ -281,4 +281,128 @@ describe('ProfileService', () => {
       );
     });
   });
+
+  describe('updateEquipment', () => {
+    it('replaces the household equipment list wholesale', async () => {
+      householdRepository.find
+        .mockResolvedValueOnce([fakeHousehold()]) // singleton lookup
+        .mockResolvedValueOnce([
+          fakeHousehold({
+            equipment: [
+              {
+                householdId: 'household-1',
+                equipmentName: 'micro-ondes',
+                household: undefined as never,
+              },
+            ],
+          }),
+        ]); // re-read after update
+
+      const result = await service.updateEquipment({
+        equipment: ['micro-ondes'],
+      });
+
+      expect(manager.delete).toHaveBeenCalledWith(HouseholdEquipment, {
+        householdId: 'household-1',
+      });
+      expect(manager.save).toHaveBeenCalledWith(HouseholdEquipment, [
+        { householdId: 'household-1', equipmentName: 'micro-ondes' },
+      ]);
+      expect(result.equipment).toEqual(['micro-ondes']);
+    });
+
+    it('throws not found when no household has been registered', async () => {
+      householdRepository.find.mockResolvedValueOnce([]);
+
+      await expect(
+        service.updateEquipment({ equipment: ['four'] }),
+      ).rejects.toBeInstanceOf(NotFoundException);
+
+      expect(dataSource.transaction).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('updatePantry', () => {
+    it('replaces the household pantry staples list wholesale', async () => {
+      householdRepository.find
+        .mockResolvedValueOnce([fakeHousehold()]) // singleton lookup
+        .mockResolvedValueOnce([
+          fakeHousehold({
+            pantryStaples: [
+              {
+                householdId: 'household-1',
+                ingredientName: 'poivre',
+                household: undefined as never,
+              },
+            ],
+          }),
+        ]); // re-read after update
+
+      const result = await service.updatePantry({
+        pantryStaples: ['poivre'],
+      });
+
+      expect(manager.delete).toHaveBeenCalledWith(HouseholdPantryStaple, {
+        householdId: 'household-1',
+      });
+      expect(manager.save).toHaveBeenCalledWith(HouseholdPantryStaple, [
+        { householdId: 'household-1', ingredientName: 'poivre' },
+      ]);
+      expect(result.pantryStaples).toEqual(['poivre']);
+    });
+
+    it('throws not found when no household has been registered', async () => {
+      householdRepository.find.mockResolvedValueOnce([]);
+
+      await expect(
+        service.updatePantry({ pantryStaples: ['sel'] }),
+      ).rejects.toBeInstanceOf(NotFoundException);
+
+      expect(dataSource.transaction).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('updateRestrictions', () => {
+    it('replaces only the provided restriction fields for the member', async () => {
+      memberRepository.findOne
+        .mockResolvedValueOnce(fakeMember()) // existence check
+        .mockResolvedValueOnce(
+          fakeMember({
+            allergens: [
+              {
+                memberId: 'member-1',
+                allergen: 'gluten',
+                member: undefined as never,
+              },
+            ],
+          }),
+        ); // re-read after update
+
+      const result = await service.updateRestrictions('member-1', {
+        allergens: ['gluten'],
+      });
+
+      expect(manager.delete).toHaveBeenCalledWith(MemberAllergen, {
+        memberId: 'member-1',
+      });
+      expect(manager.save).toHaveBeenCalledWith(MemberAllergen, [
+        { memberId: 'member-1', allergen: 'gluten' },
+      ]);
+      expect(manager.delete).not.toHaveBeenCalledWith(
+        MemberExcludedIngredient,
+        expect.anything(),
+      );
+      expect(result.allergens).toEqual(['gluten']);
+    });
+
+    it('throws not found for an unknown member', async () => {
+      memberRepository.findOne.mockResolvedValueOnce(null);
+
+      await expect(
+        service.updateRestrictions('missing', { allergens: [] }),
+      ).rejects.toBeInstanceOf(NotFoundException);
+
+      expect(dataSource.transaction).not.toHaveBeenCalled();
+    });
+  });
 });

@@ -80,3 +80,26 @@ export const HouseholdSchema = z.object({
   updatedAt: z.string(),
 });
 export type Household = z.infer<typeof HouseholdSchema>;
+
+// --- Granular profile patches (EP1.6) ---
+// Scoped to match the household/member split above rather than a flat
+// user_id model: equipment/pantry are household-level (singleton), while
+// restrictions are member-level since allergies are personal.
+
+export const EquipmentPatchRequestSchema = z.object({
+  equipment: z.array(z.string()),
+});
+export type EquipmentPatchRequest = z.infer<typeof EquipmentPatchRequestSchema>;
+
+export const PantryPatchRequestSchema = z.object({
+  pantryStaples: z.array(z.string()),
+});
+export type PantryPatchRequest = z.infer<typeof PantryPatchRequestSchema>;
+
+export const RestrictionsPatchRequestSchema = z.object({
+  allergens: z.array(z.string()).optional(),
+  excludedIngredients: z.array(z.string()).optional(),
+});
+export type RestrictionsPatchRequest = z.infer<
+  typeof RestrictionsPatchRequestSchema
+>;

@@ -6,11 +6,14 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import {
+  EquipmentPatchRequest,
   Household as HouseholdDto,
   HouseholdRegistrationRequest,
   MemberInput,
   MemberProfile as MemberProfileDto,
   MemberUpdateRequest,
+  PantryPatchRequest,
+  RestrictionsPatchRequest,
 } from '@my-food-recipes/contracts';
 import { Household } from './household.entity';
 import { HouseholdEquipment } from './household-equipment.entity';
@@ -97,11 +100,7 @@ export class ProfileService {
   }
 
   async addMember(input: MemberInput): Promise<MemberProfileDto> {
-    const households = await this.householdRepository.find({ take: 1 });
-    const household = households[0];
-    if (!household) {
-      throw new NotFoundException('No household has been registered yet');
-    }
+    const household = await this.getHouseholdEntity();
 
     const memberId = await this.dataSource.transaction(async (manager) => {
       const member = await this.createMember(manager, household.id, input);
@@ -160,6 +159,99 @@ export class ProfileService {
     if (!result.affected) {
       throw new NotFoundException(`Member ${memberId} not found`);
     }
+  }
+
+  async updateEquipment(input: EquipmentPatchRequest): Promise<HouseholdDto> {
+    const household = await this.getHouseholdEntity();
+
+    await this.dataSource.transaction(async (manager) => {
+      await manager.delete(HouseholdEquipment, { householdId: household.id });
+      if (input.equipment.length > 0) {
+        await manager.save(
+          HouseholdEquipment,
+          input.equipment.map((equipmentName) =>
+            manager.create(HouseholdEquipment, {
+              householdId: household.id,
+              equipmentName,
+            }),
+          ),
+        );
+      }
+    });
+
+    return this.getHousehold(household.id);
+  }
+
+  async updatePantry(input: PantryPatchRequest): Promise<HouseholdDto> {
+    const household = await this.getHouseholdEntity();
+
+    await this.dataSource.transaction(async (manager) => {
+      await manager.delete(HouseholdPantryStaple, {
+        householdId: household.id,
+      });
+      if (input.pantryStaples.length > 0) {
+        await manager.save(
+          HouseholdPantryStaple,
+          input.pantryStaples.map((ingredientName) =>
+            manager.create(HouseholdPantryStaple, {
+              householdId: household.id,
+              ingredientName,
+            }),
+          ),
+        );
+      }
+    });
+
+    return this.getHousehold(household.id);
+  }
+
+  async updateRestrictions(
+    memberId: string,
+    input: RestrictionsPatchRequest,
+  ): Promise<MemberProfileDto> {
+    await this.getMemberEntity(memberId);
+
+    await this.dataSource.transaction(async (manager) => {
+      const { allergens, excludedIngredients } = input;
+
+      if (allergens !== undefined) {
+        await manager.delete(MemberAllergen, { memberId });
+        if (allergens.length > 0) {
+          await manager.save(
+            MemberAllergen,
+            allergens.map((allergen) =>
+              manager.create(MemberAllergen, { memberId, allergen }),
+            ),
+          );
+        }
+      }
+
+      if (excludedIngredients !== undefined) {
+        await manager.delete(MemberExcludedIngredient, { memberId });
+        if (excludedIngredients.length > 0) {
+          await manager.save(
+            MemberExcludedIngredient,
+            excludedIngredients.map((ingredientName) =>
+              manager.create(MemberExcludedIngredient, {
+                memberId,
+                ingredientName,
+              }),
+            ),
+          );
+        }
+      }
+    });
+
+    return this.getMember(memberId);
+  }
+
+  private async getHouseholdEntity(): Promise<Household> {
+    const households = await this.householdRepository.find({ take: 1 });
+    const household = households[0];
+    if (!household) {
+      throw new NotFoundException('No household has been registered yet');
+    }
+    return household;
   }
 
   private async createMember(
