@@ -13,7 +13,7 @@ import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { Tag } from "../ui/Tag";
 import { MemberForm } from "./MemberForm";
-import { DIET_OPTIONS, PRIMARY_GOAL_OPTIONS } from "./vocabulary";
+import { DIET_OPTIONS, PRIMARY_GOAL_OPTIONS, SECONDARY_DIET_OPTIONS } from "./vocabulary";
 
 const SPECIAL_CONDITION_LABELS: Record<SpecialCondition, string> = {
   pregnant: "Enceinte",
@@ -114,6 +114,11 @@ export function MemberCard({
       <div className="mb-3 flex flex-wrap gap-1.5">
         <Tag>{goalLabel}</Tag>
         <Tag>{dietLabel}</Tag>
+        {(member.secondaryDiets ?? []).map((sd) => (
+          <Tag key={sd}>
+            {SECONDARY_DIET_OPTIONS.find((o) => o.value === sd)?.label ?? sd}
+          </Tag>
+        ))}
         <Tag>{member.dailyCaloriesTarget} kcal/j</Tag>
         {member.bmi != null && member.bmiCategory != null && (
           <span

@@ -11,12 +11,14 @@ export function TagListEditor({
   suggestions = [],
   onChange,
   placeholder = "Ajouter…",
+  allowCustom = true,
 }: {
   label: string;
   values: string[];
   suggestions?: { value: string; label: string }[];
   onChange: (next: string[]) => void;
   placeholder?: string;
+  allowCustom?: boolean;
 }) {
   const [draft, setDraft] = useState("");
 
@@ -51,23 +53,25 @@ export function TagListEditor({
           ))}
         </div>
       )}
-      <div className="flex gap-2">
-        <input
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              add(draft);
-            }
-          }}
-          placeholder={placeholder}
-          className="min-h-11 flex-1 rounded-md border-2 border-border bg-surface px-3 text-sm"
-        />
-        <Button type="button" variant="secondary" onClick={() => add(draft)}>
-          Ajouter
-        </Button>
-      </div>
+      {allowCustom && (
+        <div className="flex gap-2">
+          <input
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                add(draft);
+              }
+            }}
+            placeholder={placeholder}
+            className="min-h-11 flex-1 rounded-md border-2 border-border bg-surface px-3 text-sm"
+          />
+          <Button type="button" variant="secondary" onClick={() => add(draft)}>
+            Ajouter
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

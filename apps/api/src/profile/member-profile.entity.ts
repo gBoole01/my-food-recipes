@@ -22,6 +22,17 @@ export type Diet =
   | 'omnivore'
   | 'vegetarien'
   | 'vegetalien'
+  | 'pescetarien'
+  | 'flexitarien';
+
+export type SecondaryDiet =
+  | 'reduit_sel'
+  | 'anti_cholesterol'
+  | 'diabete_ig_bas'
+  | 'pauvre_fodmaps'
+  | 'pauvre_fibres'
+  | 'cetogene'
+  | 'low_carb'
   | 'paleo'
   | 'sans_gluten';
 
@@ -50,6 +61,9 @@ export class MemberProfile {
 
   @Column({ type: 'varchar', name: 'diet' })
   diet!: Diet;
+
+  @Column({ type: 'simple-array', name: 'secondary_diets', default: '' })
+  secondaryDiets!: SecondaryDiet[];
 
   @Column({ type: 'varchar', nullable: true, name: 'gender' })
   gender?: string | null;

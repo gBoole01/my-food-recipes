@@ -52,16 +52,30 @@ export const DietSchema = z.enum([
   'omnivore',
   'vegetarien',
   'vegetalien',
+  'pescetarien',
+  'flexitarien',
+]);
+export type Diet = z.infer<typeof DietSchema>;
+
+export const SecondaryDietSchema = z.enum([
+  'reduit_sel',
+  'anti_cholesterol',
+  'diabete_ig_bas',
+  'pauvre_fodmaps',
+  'pauvre_fibres',
+  'cetogene',
+  'low_carb',
   'paleo',
   'sans_gluten',
 ]);
-export type Diet = z.infer<typeof DietSchema>;
+export type SecondaryDiet = z.infer<typeof SecondaryDietSchema>;
 
 export const MemberInputSchema = z.object({
   name: z.string().min(1),
   primaryGoal: PrimaryGoalSchema,
   dailyCaloriesTarget: z.number().int().positive(),
   diet: DietSchema,
+  secondaryDiets: z.array(SecondaryDietSchema).optional().default([]),
   allergens: z.array(z.string()).optional().default([]),
   excludedIngredients: z.array(z.string()).optional().default([]),
 });
@@ -85,6 +99,7 @@ export const MemberProfileSchema = z.object({
   primaryGoal: PrimaryGoalSchema,
   dailyCaloriesTarget: z.number().int(),
   diet: DietSchema,
+  secondaryDiets: z.array(SecondaryDietSchema),
   allergens: z.array(z.string()),
   excludedIngredients: z.array(z.string()),
   gender: GenderSchema.nullish(),

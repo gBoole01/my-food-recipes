@@ -305,24 +305,6 @@ Pour garantir l'indépendance des développeurs frontend et backend lors des dé
 
 ## NOTES
 
-### Liste des régimes alimentaires
-
-#### Principaux
-
-Omnivore, Végétarien, Végétalien, Pescétarien, Flexitarien
-
-#### Secondaires
-
-Réduit en sel, Anti-cholestérol, Diabète Index Glycémique Bas, Pauvre en FODMAPs, Pauvre en fibres, Cétogène, Low Carb, Paléo, Sans gluten
-
-### Liste des allergènes
-
-Gluten, Crustacés, Œufs, Poissons, Arachides, Soja, Lait, Fruits à coque, Céleri, Moutarde, Sésame, Sulfites, Lupin, Mollusques
-
-### Liste des équipements
-
-Plaques de cuisson, four traditionnel, four à micro-ondes, airfryer, cuiseur vapeur, grille-pain
-
 ### Liste des pantries
 
 #### 1. Les Féculents & Céréales (La base texturante)

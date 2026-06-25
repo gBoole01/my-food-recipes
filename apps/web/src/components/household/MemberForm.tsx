@@ -10,7 +10,7 @@ import type {
 import { Button } from "../ui/Button";
 import { Chip } from "../ui/Chip";
 import { TagListEditor } from "./TagListEditor";
-import { ALLERGEN_OPTIONS, DIET_OPTIONS } from "./vocabulary";
+import { ALLERGEN_OPTIONS, DIET_OPTIONS, SECONDARY_DIET_OPTIONS } from "./vocabulary";
 
 export type MemberFormValues = MemberInput;
 
@@ -51,6 +51,7 @@ const DEFAULT_VALUES: MemberFormValues = {
   primaryGoal: "stabilisation",
   dailyCaloriesTarget: 2000,
   diet: "omnivore",
+  secondaryDiets: [],
   allergens: [],
   excludedIngredients: [],
 };
@@ -280,7 +281,7 @@ export function MemberForm({
       )}
 
       <div className="flex flex-col gap-2">
-        <p className="text-sm font-bold">Régime alimentaire</p>
+        <p className="text-sm font-bold">Régime principal</p>
         <div className="flex flex-wrap gap-2">
           {DIET_OPTIONS.map((option) => (
             <Chip
@@ -294,13 +295,57 @@ export function MemberForm({
         </div>
       </div>
 
-      <TagListEditor
-        label="Allergènes"
-        values={values.allergens ?? []}
-        suggestions={ALLERGEN_OPTIONS}
-        onChange={(next) => set("allergens", next)}
-        placeholder="Autre allergène…"
-      />
+      <div className="flex flex-col gap-2">
+        <p className="text-sm font-bold">Régimes secondaires (optionnel)</p>
+        <div className="flex flex-wrap gap-2">
+          {SECONDARY_DIET_OPTIONS.map((option) => {
+            const selected = (values.secondaryDiets ?? []).includes(option.value);
+            return (
+              <Chip
+                key={option.value}
+                selected={selected}
+                onClick={() => {
+                  const current = values.secondaryDiets ?? [];
+                  set(
+                    "secondaryDiets",
+                    selected
+                      ? current.filter((v) => v !== option.value)
+                      : [...current, option.value],
+                  );
+                }}
+              >
+                {option.label}
+              </Chip>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <p className="text-sm font-bold">Allergènes</p>
+        <div className="flex flex-wrap gap-2">
+          {ALLERGEN_OPTIONS.map((option) => {
+            const selected = (values.allergens ?? []).includes(option.value);
+            return (
+              <Chip
+                key={option.value}
+                selected={selected}
+                onClick={() => {
+                  const current = values.allergens ?? [];
+                  set(
+                    "allergens",
+                    selected
+                      ? current.filter((v) => v !== option.value)
+                      : [...current, option.value],
+                  );
+                }}
+              >
+                {option.label}
+              </Chip>
+            );
+          })}
+        </div>
+      </div>
 
       <TagListEditor
         label="Ingrédients exclus"

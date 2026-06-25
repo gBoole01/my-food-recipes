@@ -365,6 +365,7 @@ export class ProfileService {
         primaryGoal: input.primaryGoal,
         dailyCaloriesTarget: input.dailyCaloriesTarget,
         diet: input.diet,
+        secondaryDiets: input.secondaryDiets ?? [],
       }),
     );
 
@@ -420,6 +421,7 @@ function toMemberResponse(member: MemberProfile): MemberProfileDto {
     primaryGoal: member.primaryGoal,
     dailyCaloriesTarget: member.dailyCaloriesTarget,
     diet: member.diet,
+    secondaryDiets: member.secondaryDiets ?? [],
     allergens: (member.allergens ?? []).map((a) => a.allergen),
     excludedIngredients: (member.excludedIngredients ?? []).map(
       (e) => e.ingredientName,

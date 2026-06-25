@@ -16,8 +16,8 @@ const DIET_COMPATIBLE_TAGS: Record<Diet, string[]> = {
   omnivore: [],
   vegetarien: ['vegetarien', 'vegetalien'],
   vegetalien: ['vegetalien'],
-  paleo: ['paleo'],
-  sans_gluten: ['sans_gluten'],
+  pescetarien: ['pescetarien', 'vegetarien', 'vegetalien'],
+  flexitarien: [],
 };
 
 const DISLIKE_WARNING_MESSAGE =
