@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AdminModule } from './admin/admin.module';
 import { DietitianAgentModule } from './agents/dietitian-agent/dietitian-agent.module';
+import { MealsModule } from './meals/meals.module';
 import { NutritionModule } from './nutrition/nutrition.module';
 import { ProfileModule } from './profile/profile.module';
 import { RecipesModule } from './recipes/recipes.module';
@@ -25,6 +26,7 @@ import { SeasonalityModule } from './seasonality/seasonality.module';
     }),
     AdminModule,
     DietitianAgentModule,
+    MealsModule,
     NutritionModule,
     ProfileModule,
     RecipesModule,
