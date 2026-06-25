@@ -8,8 +8,9 @@ import type { RouteStep } from "./StepIndicator";
 
 const STEPS: RouteStep[] = [
   { href: "/", label: "Accueil" },
-  { href: "/chat", label: "Chat" },
+  { href: "/household", label: "Foyer" },
   { href: "/recipes", label: "Recettes" },
+  { href: "/catalogue", label: "Catalogue" },
   { href: "/shopping-list", label: "Courses" },
 ];
 
@@ -32,8 +33,9 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   const reached: Record<string, boolean> = {
     "/": true,
-    "/chat": state.messages.length > 0 || pathname !== "/",
+    "/household": true,
     "/recipes": state.recipes.length > 0,
+    "/catalogue": true,
     "/shopping-list": state.shoppingList.length > 0,
   };
 
