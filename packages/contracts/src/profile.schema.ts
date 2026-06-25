@@ -34,12 +34,22 @@ export const PrimaryGoalSchema = z.enum([
 ]);
 export type PrimaryGoal = z.infer<typeof PrimaryGoalSchema>;
 
+export const DietSchema = z.enum([
+  'omnivore',
+  'vegetarien',
+  'vegetalien',
+  'paleo',
+  'sans_gluten',
+]);
+export type Diet = z.infer<typeof DietSchema>;
+
 export const MemberInputSchema = z.object({
   name: z.string().min(1),
   primaryGoal: PrimaryGoalSchema,
   dailyCaloriesTarget: z.number().int().positive(),
   maxSodiumMg: z.number().int().positive(),
   consumptionTrackingEnabled: z.boolean().optional().default(true),
+  diet: DietSchema,
   allergens: z.array(z.string()).optional().default([]),
   excludedIngredients: z.array(z.string()).optional().default([]),
 });
@@ -64,6 +74,7 @@ export const MemberProfileSchema = z.object({
   dailyCaloriesTarget: z.number().int(),
   maxSodiumMg: z.number().int(),
   consumptionTrackingEnabled: z.boolean(),
+  diet: DietSchema,
   allergens: z.array(z.string()),
   excludedIngredients: z.array(z.string()),
   createdAt: z.string(),

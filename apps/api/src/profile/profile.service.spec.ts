@@ -22,6 +22,7 @@ function fakeMember(overrides: Partial<MemberProfile> = {}): MemberProfile {
     dailyCaloriesTarget: 2200,
     maxSodiumMg: 2300,
     consumptionTrackingEnabled: true,
+    diet: 'omnivore',
     createdAt: new Date('2026-01-01T00:00:00.000Z'),
     updatedAt: new Date('2026-01-01T00:00:00.000Z'),
     allergens: [
@@ -156,6 +157,7 @@ describe('ProfileService', () => {
             dailyCaloriesTarget: 2200,
             maxSodiumMg: 2300,
             consumptionTrackingEnabled: true,
+            diet: 'omnivore',
             allergens: ['arachide'],
             excludedIngredients: ['coriandre'],
           },
@@ -217,6 +219,7 @@ describe('ProfileService', () => {
         dailyCaloriesTarget: 1800,
         maxSodiumMg: 2000,
         consumptionTrackingEnabled: true,
+        diet: 'omnivore',
         allergens: [],
         excludedIngredients: [],
       });
@@ -235,6 +238,7 @@ describe('ProfileService', () => {
           dailyCaloriesTarget: 1800,
           maxSodiumMg: 2000,
           consumptionTrackingEnabled: true,
+          diet: 'omnivore',
           allergens: [],
           excludedIngredients: [],
         }),

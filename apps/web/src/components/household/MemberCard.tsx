@@ -6,7 +6,7 @@ import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { Tag } from "../ui/Tag";
 import { MemberForm } from "./MemberForm";
-import { PRIMARY_GOAL_OPTIONS } from "./vocabulary";
+import { DIET_OPTIONS, PRIMARY_GOAL_OPTIONS } from "./vocabulary";
 
 export function MemberCard({
   member,
@@ -20,6 +20,7 @@ export function MemberCard({
   const [editing, setEditing] = useState(false);
   const [removing, setRemoving] = useState(false);
   const goalLabel = PRIMARY_GOAL_OPTIONS.find((o) => o.value === member.primaryGoal)?.label ?? member.primaryGoal;
+  const dietLabel = DIET_OPTIONS.find((o) => o.value === member.diet)?.label ?? member.diet;
 
   if (editing) {
     return (
@@ -60,6 +61,7 @@ export function MemberCard({
       </div>
       <div className="mb-3 flex flex-wrap gap-1.5">
         <Tag>{goalLabel}</Tag>
+        <Tag>{dietLabel}</Tag>
         <Tag>{member.dailyCaloriesTarget} kcal/j</Tag>
         <Tag>{member.maxSodiumMg} mg sodium max</Tag>
         {!member.consumptionTrackingEnabled && <Tag tone="secondary">Suivi désactivé</Tag>}

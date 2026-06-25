@@ -300,6 +300,7 @@ export class ProfileService {
         dailyCaloriesTarget: input.dailyCaloriesTarget,
         maxSodiumMg: input.maxSodiumMg,
         consumptionTrackingEnabled: input.consumptionTrackingEnabled,
+        diet: input.diet,
       }),
     );
 
@@ -351,6 +352,7 @@ function toMemberResponse(member: MemberProfile): MemberProfileDto {
     dailyCaloriesTarget: member.dailyCaloriesTarget,
     maxSodiumMg: member.maxSodiumMg,
     consumptionTrackingEnabled: member.consumptionTrackingEnabled,
+    diet: member.diet,
     allergens: (member.allergens ?? []).map((a) => a.allergen),
     excludedIngredients: (member.excludedIngredients ?? []).map(
       (e) => e.ingredientName,

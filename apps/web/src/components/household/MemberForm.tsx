@@ -5,7 +5,7 @@ import type { MemberInput } from "@my-food-recipes/contracts";
 import { Button } from "../ui/Button";
 import { Chip } from "../ui/Chip";
 import { TagListEditor } from "./TagListEditor";
-import { ALLERGEN_OPTIONS, PRIMARY_GOAL_OPTIONS } from "./vocabulary";
+import { ALLERGEN_OPTIONS, DIET_OPTIONS, PRIMARY_GOAL_OPTIONS } from "./vocabulary";
 
 export type MemberFormValues = MemberInput;
 
@@ -15,6 +15,7 @@ const DEFAULT_VALUES: MemberFormValues = {
   dailyCaloriesTarget: 2000,
   maxSodiumMg: 2300,
   consumptionTrackingEnabled: true,
+  diet: "omnivore",
   allergens: [],
   excludedIngredients: [],
 };
@@ -64,6 +65,21 @@ export function MemberForm({
               key={option.value}
               selected={values.primaryGoal === option.value}
               onClick={() => set("primaryGoal", option.value)}
+            >
+              {option.label}
+            </Chip>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <p className="text-sm font-bold">Régime alimentaire</p>
+        <div className="flex flex-wrap gap-2">
+          {DIET_OPTIONS.map((option) => (
+            <Chip
+              key={option.value}
+              selected={values.diet === option.value}
+              onClick={() => set("diet", option.value)}
             >
               {option.label}
             </Chip>

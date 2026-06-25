@@ -18,6 +18,13 @@ export type PrimaryGoal =
   | 'prise_de_masse'
   | 'sante_cardio';
 
+export type Diet =
+  | 'omnivore'
+  | 'vegetarien'
+  | 'vegetalien'
+  | 'paleo'
+  | 'sans_gluten';
+
 @Entity('member_profiles')
 export class MemberProfile {
   @PrimaryGeneratedColumn('uuid')
@@ -49,6 +56,9 @@ export class MemberProfile {
     default: true,
   })
   consumptionTrackingEnabled!: boolean;
+
+  @Column({ type: 'varchar', name: 'diet' })
+  diet!: Diet;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;

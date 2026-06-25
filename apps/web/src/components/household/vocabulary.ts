@@ -27,3 +27,11 @@ export const PRIMARY_GOAL_OPTIONS = [
   { value: "prise_de_masse", label: "Prise de masse" },
   { value: "sante_cardio", label: "Santé cardio" },
 ] as const;
+
+export const DIET_OPTIONS = [
+  { value: "omnivore", label: "Omnivore" },
+  { value: "vegetarien", label: "Végétarien" },
+  { value: "vegetalien", label: "Végétalien" },
+  { value: "paleo", label: "Paléo" },
+  { value: "sans_gluten", label: "Sans gluten" },
+] as const;
