@@ -51,6 +51,7 @@ Un système agentique interroge ensuite une base de connaissance interne (corpus
 3. *Couche 3 (Souple - Niveau 2 de repli) :* Désactivation des filtres `dislike` de l'utilisateur. Envoi d'un drapeau `warning` explicite dans la réponse HTTP.
 
 - [x] **EP1.9 [Anti-Redondance Temporelle et Intra-Batch] :** Développer le vérificateur de variété. Il doit scanner la table `user_planning` (historique stocké par repas individuel) sur les $N$ derniers jours ($N=3$) pour interdire les recettes contenant un ingrédient principal présent plus de $X$ fois ($X=2$). *Note : L'algorithme doit aussi cumuler les ingrédients des recettes déjà acceptées en cours de génération (Cold Start).*
+
 - [] **EP1.10 [Calculateur Nutritionnel Français] :** Écrire le module de calcul nutritionnel :
   - **Les Macronutriments (Protéines, Lipides, Glucides) :** Ils sont calculés sous forme de **fourchettes de pourcentages** de l'apport énergétique total (les calories calculées précédemment), ou selon le **poids corporel**. **Les Macros se gèrent à la journée**
     - 1g de Protéines = 4 kcal
@@ -119,156 +120,12 @@ export function calculateMacroTargets(calories: number, weightKg: number, isSpor
 
 ```
   
-- [] **EP1.11 [Daily Kcal Calculator] :** Écrire un module de calcul du Besoin Énergétique Journalier (BEJ) d'un utilisateur.
+- [x] **EP1.11 [Daily Kcal Calculator] :** Écrire un module de calcul du Besoin Énergétique Journalier (BEJ) d'un utilisateur.
   - Il doit collecter le sexe, l'âge, le poids et la taille de l'utilisateur pour connaitre son métabolisme.
   - Il doit collecter des informations sur son activité physique en fonction de son activité quotidienne et ses activités sportives.
   - Cela permettra d'aposer un curseur de besoin énergétique journalier (BEJ) sur le profil utilisateur (Perte de poids, stabilisation, prise de masse).
   - Un badge IMC sera également calculé pour l'utilisateur, qui sera affiché sur le profil.
   - Si l'utilisateur est une femme, il faut également savoir si elle est enceinte ou allaitante.
-
-```typescript
-export interface TimeBudgetInput {
-  sittingHours: number;       // Desk job, driving, TV, eating
-  standingLightHours: number; // Standing, walking, light chores
-  moderateSportHours: number; // Brisk walking, easy workouts
-  intenseSportHours: number;  // Running, heavy lifting, intense cardio
-}
-
-/**
- * Calculates the 24-hour Physical Activity Level (PAL) coefficient based on ANSES/EFSA time-use references.
- */
-export function calculatePAL(input: TimeBudgetInput): number {
-  const { sittingHours, standingLightHours, moderateSportHours, intenseSportHours } = input;
-
-  // 1. Calculate active hours
-  const activeHours = sittingHours + standingLightHours + moderateSportHours + intenseSportHours;
-
-  if (activeHours > 24) {
-    throw new Error("Total activity hours cannot exceed 24 hours.");
-  }
-
-  // 2. The remaining hours of the day are automatically allocated to sleep/rest (Factor 1.0)
-  const sleepingHours = 24 - activeHours;
-
-  // 3. Weighted calculation based on metabolic cost factors
-  const totalWeightedScores = 
-    (sleepingHours * 1.0) +
-    (sittingHours * 1.4) +
-    (standingLightHours * 1.7) +
-    (moderateSportHours * 2.0) +
-    (intenseSportHours * 2.4);
-
-  // 4. Divide by 24 to get the final average daily PAL coefficient
-  const rawPal = totalWeightedScores / 24;
-
-  // Round to 2 decimal places for data cleanliness
-  return Math.round(rawPal * 100) / 100;
-}
-
-// --- USAGE EXAMPLE ---
-// Profile: A desk worker who sleeps ~8 hours, sits ~11 hours, 
-// spends 4 hours standing/moving around, and does 1 hour of intense gym.
-const userDay: TimeBudgetInput = {
-  sittingHours: 11,
-  standingLightHours: 4,
-  moderateSportHours: 0,
-  intenseSportHours: 1
-};
-
-const calculatedPal = calculatePAL(userDay);
-console.log(`Calculated PAL: ${calculatedPal}`); // Output: 1.36 (Matches ANSES sedentary baseline)
-
-// 1. Define strict types for the algorithm inputs
-export enum Gender {
-  Male = 'M',
-  Female = 'F'
-}
-
-export enum Goal {
-  Loss = 'loss',
-  Maintenance = 'maintenance',
-  Gain = 'gain'
-}
-
-export enum SpecialCondition {
-  Pregnant = 'pregnant',
-  Breastfeeding = 'breastfeeding'
-}
-
-export interface UserProfile {
-  gender: Gender;
-  weightKg: number;
-  heightCm: number;
-  ageYears: number;
-  pal: number; // Physical Activity Level (typically 1.2 to 2.2)
-  goal: Goal;
-  specialCondition?: SpecialCondition;
-  pregnancyTrimester?: 1 | 2 | 3; // Only required if specialCondition is Pregnant
-}
-
-/**
- * Calculates the Daily Energy Requirement (DER) in kcal based on ANSES guidelines.
- * Uses the revised Harris-Benedict equations (Roza and Shizgal, 1984).
- */
-export function calculateDailyCaloricTarget(profile: UserProfile): number {
-  const { gender, weightKg, heightCm, ageYears, pal, goal, specialCondition, pregnancyTrimester } = profile;
-
-  // 1. Calculate Basal Metabolic Rate (BMR)
-  let bmr = 0;
-  if (gender === Gender.Male) {
-    bmr = 88.362 + (13.397 * weightKg) + (4.799 * heightCm) - (5.677 * ageYears);
-  } else {
-    bmr = 447.593 + (9.247 * weightKg) + (3.098 * heightCm) - (4.330 * ageYears);
-  }
-
-  // 2. Calculate Total Daily Energy Expenditure (TDEE) for maintenance
-  let tdee = bmr * pal;
-
-  // 3. Adjust for special physiological conditions (ANSES / EFSA guidelines)
-  if (specialCondition === SpecialCondition.Pregnant) {
-    switch (pregnancyTrimester) {
-      case 1: tdee += 70; break;
-      case 2: tdee += 260; break;
-      case 3: tdee += 500; break;
-      default: tdee += 260; // Default to 2nd trimester if not specified
-    }
-  } else if (specialCondition === SpecialCondition.Breastfeeding) {
-    tdee += 500;
-  }
-
-  // 4. Adjust according to the user's goal (Deficit or Surplus)
-  let targetCalories = tdee;
-  if (goal === Goal.Loss) {
-    // 15% safe deficit, capped at 500 kcal maximum
-    const deficit = Math.min(tdee * 0.15, 500);
-    targetCalories = tdee - deficit;
-  } else if (goal === Goal.Gain) {
-    // 10% clean surplus to minimize fat gain
-    const surplus = tdee * 0.10;
-    targetCalories = tdee + surplus;
-  }
-
-  // Safety Guardrail: Never drop below the Basal Metabolic Rate to prevent starvation mode
-  if (targetCalories < bmr) {
-    targetCalories = bmr;
-  }
-
-  return Math.round(targetCalories);
-}
-
-// --- USAGE EXAMPLE ---
-const activeWomanProfile: UserProfile = {
-  gender: Gender.Female,
-  weightKg: 65,
-  heightCm: 168,
-  ageYears: 30,
-  pal: 1.6, // Moderate activity
-  goal: Goal.Loss
-};
-
-const dailyCalories = calculateDailyCaloricTarget(activeWomanProfile);
-console.log(`Daily caloric target: ${dailyCalories} kcal`); // Output: 1656 kcal
-```
 
 ### [Sprint 4] Phase 3 : Génération Batch, Substitution Ciblée & Listes
 
@@ -452,11 +309,11 @@ Pour garantir l'indépendance des développeurs frontend et backend lors des dé
 
 #### Principaux
 
-Végétarien, Végétalien, Pescétarien, Flexitarien, Sans porc, Halal, Cascher
+Omnivore, Végétarien, Végétalien, Pescétarien, Flexitarien
 
 #### Secondaires
 
-Réduit en sel, Anti-cholestérol, Diabète Index Glycémique Bas, Pauvre en FODMAPs, Pauvre en fibres, Cétogène, Low Carb, Paléo
+Réduit en sel, Anti-cholestérol, Diabète Index Glycémique Bas, Pauvre en FODMAPs, Pauvre en fibres, Cétogène, Low Carb, Paléo, Sans gluten
 
 ### Liste des allergènes
 

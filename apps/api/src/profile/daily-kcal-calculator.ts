@@ -22,8 +22,12 @@ export interface DerInput {
 }
 
 export function calculatePAL(input: TimeBudgetInput): number {
-  const { sittingHours, standingLightHours, moderateSportHours, intenseSportHours } =
-    input;
+  const {
+    sittingHours,
+    standingLightHours,
+    moderateSportHours,
+    intenseSportHours,
+  } = input;
 
   const activeHours =
     sittingHours + standingLightHours + moderateSportHours + intenseSportHours;

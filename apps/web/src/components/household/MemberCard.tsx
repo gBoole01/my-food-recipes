@@ -7,12 +7,24 @@ import type {
   EnergyResponse,
   MemberProfile,
   MemberUpdateRequest,
+  SpecialCondition,
 } from "@my-food-recipes/contracts";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { Tag } from "../ui/Tag";
 import { MemberForm } from "./MemberForm";
 import { DIET_OPTIONS, PRIMARY_GOAL_OPTIONS } from "./vocabulary";
+
+const SPECIAL_CONDITION_LABELS: Record<SpecialCondition, string> = {
+  pregnant: "Enceinte",
+  breastfeeding: "Allaitante",
+};
+
+const TRIMESTER_LABELS: Record<1 | 2 | 3, string> = {
+  1: "1er trimestre",
+  2: "2e trimestre",
+  3: "3e trimestre",
+};
 
 const BMI_CATEGORY_LABELS: Record<BmiCategory, string> = {
   insuffisant: "Insuffisant",
@@ -109,6 +121,14 @@ export function MemberCard({
           >
             IMC {member.bmi} · {BMI_CATEGORY_LABELS[member.bmiCategory]}
           </span>
+        )}
+        {member.specialCondition != null && (
+          <Tag>
+            {SPECIAL_CONDITION_LABELS[member.specialCondition]}
+            {member.specialCondition === "pregnant" && member.pregnancyTrimester != null
+              ? ` · ${TRIMESTER_LABELS[member.pregnancyTrimester]}`
+              : ""}
+          </Tag>
         )}
       </div>
 

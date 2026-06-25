@@ -127,6 +127,10 @@ export const EnergyInputSchema = z
         d.intenseSportHours <=
       24,
     { message: 'Total activity hours cannot exceed 24 hours.' },
+  )
+  .refine(
+    (d) => d.specialCondition !== 'pregnant' || d.pregnancyTrimester != null,
+    { message: 'pregnancyTrimester is required when specialCondition is pregnant.', path: ['pregnancyTrimester'] },
   );
 export type EnergyInput = z.infer<typeof EnergyInputSchema>;
 
