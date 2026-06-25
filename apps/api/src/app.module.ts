@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AdminModule } from './admin/admin.module';
 import { DietitianAgentModule } from './agents/dietitian-agent/dietitian-agent.module';
 import { NutritionModule } from './nutrition/nutrition.module';
 import { ProfileModule } from './profile/profile.module';
@@ -22,6 +23,7 @@ import { SeasonalityModule } from './seasonality/seasonality.module';
       }),
       inject: [ConfigService],
     }),
+    AdminModule,
     DietitianAgentModule,
     NutritionModule,
     ProfileModule,

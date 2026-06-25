@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { Hanken_Grotesk, Instrument_Serif } from "next/font/google";
-import { AppShell } from "@/components/layout/AppShell";
-import { AppStateProvider } from "@/store/AppStateProvider";
 import "./globals.css";
 
 const instrumentSerif = Instrument_Serif({
@@ -33,11 +31,7 @@ export default function RootLayout({
       lang="fr"
       className={`${instrumentSerif.variable} ${hankenGrotesk.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
-        <AppStateProvider>
-          <AppShell>{children}</AppShell>
-        </AppStateProvider>
-      </body>
+      <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
 }

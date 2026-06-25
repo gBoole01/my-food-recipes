@@ -1,6 +1,8 @@
 import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 import { RecipeIngredient } from './recipe-ingredient.entity';
 
+export type RecipeStatus = 'draft' | 'test' | 'published';
+
 @Entity('recipes')
 export class Recipe {
   @PrimaryColumn('varchar')
@@ -41,6 +43,9 @@ export class Recipe {
 
   @Column('text', { array: true })
   steps!: string[];
+
+  @Column({ type: 'varchar', default: 'published' })
+  status!: RecipeStatus;
 
   @OneToMany(() => RecipeIngredient, (ingredient) => ingredient.recipe)
   ingredients!: RecipeIngredient[];
