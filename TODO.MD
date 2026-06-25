@@ -44,14 +44,81 @@ Un système agentique interroge ensuite une base de connaissance interne (corpus
 
 ### [Sprint 3] Phase 2 : Moteur de Filtrage Anti-Hallucination & Fallback
 
-- [] **EP1.8 [SQL Filter & Stratégie Fallback] :** Concevoir le pipeline de nettoyage des recettes. Implémenter l'algorithme de dégradation gracieuse en couches (Cascading Fallback) si le catalogue disponible tombe à **zéro résultat** :
+- [x] **EP1.8 [SQL Filter & Stratégie Fallback] :** Concevoir le pipeline de nettoyage des recettes. Implémenter l'algorithme de dégradation gracieuse en couches (Cascading Fallback) si le catalogue disponible tombe à **zéro résultat** :
 
 1. *Couche 1 (Dure - Non négociable) :* Élimination stricte des allergènes, aliments exclus de l'onboarding et matériels de cuisson manquants.
 2. *Couche 2 (Souple - Niveau 1 de repli) :* Désactivation automatique de l'anti-redondance ingrédients si le catalogue est vide.
 3. *Couche 3 (Souple - Niveau 2 de repli) :* Désactivation des filtres `dislike` de l'utilisateur. Envoi d'un drapeau `warning` explicite dans la réponse HTTP.
 
-- [] **EP1.9 [Anti-Redondance Temporelle et Intra-Batch] :** Développer le vérificateur de variété. Il doit scanner la table `user_planning` (historique stocké par repas individuel) sur les $N$ derniers jours ($N=3$) pour interdire les recettes contenant un ingrédient principal présent plus de $X$ fois ($X=2$). *Note : L'algorithme doit aussi cumuler les ingrédients des recettes déjà acceptées en cours de génération (Cold Start).*
-- [] **EP1.10 [Calculateur Nutritionnel Français] :** Écrire le module de mise à l'échelle des macros (Protéines, Lipides, Glucides, Calories) ajusté dynamiquement selon le nombre de couverts du repas. Appliquer la formule de conversion légale pour le marché français :
+- [x] **EP1.9 [Anti-Redondance Temporelle et Intra-Batch] :** Développer le vérificateur de variété. Il doit scanner la table `user_planning` (historique stocké par repas individuel) sur les $N$ derniers jours ($N=3$) pour interdire les recettes contenant un ingrédient principal présent plus de $X$ fois ($X=2$). *Note : L'algorithme doit aussi cumuler les ingrédients des recettes déjà acceptées en cours de génération (Cold Start).*
+- [] **EP1.10 [Calculateur Nutritionnel Français] :** Écrire le module de calcul nutritionnel :
+  - **Les Macronutriments (Protéines, Lipides, Glucides) :** Ils sont calculés sous forme de **fourchettes de pourcentages** de l'apport énergétique total (les calories calculées précédemment), ou selon le **poids corporel**. **Les Macros se gèrent à la journée**
+    - 1g de Protéines = 4 kcal
+    - 1g de Glucides = 4 kcal
+    - 1g de Lipides = 9 kcal
+
+    - | Macronutriment | Recommandation ANSES | Règle de calcul pour l'algorithme |
+      | --- | --- | --- |
+      | **Protéines** | **10% à 20%** de l'apport total
+      <br>*(ou minimum $0,83\text{g/kg/j}$ pour un adulte sain)* | **15%** est une excellente moyenne de base. Pour les sportifs (objectif 'gain'), on cible plutôt $1,5\text{g}$ à $2\text{g}$ par kg de poids. |
+      | **Lipides** | **35% à 40%** de l'apport total <br>
+      <br>*(Le gras est crucial pour le système hormonal !)* | **35%** (Ne jamais descendre sous 30%, erreur classique des anciennes apps). |
+      | **Glucides** | **40% à 55%** de l'apport total | **Le reste des calories (ex: 50%)**. |
+
+  - **Les Micronutriments (Vitamines et Minéraux) :** Ce sont des **valeurs fixes absolues** (en mg ou µg) dépendant uniquement de l'âge, du sexe et de situations spécifiques (grossesse). algorithme n'a pas besoin de faire de calcul dynamique. Tu dois intégrer en base de données une **table de constantes** basée sur le profil de l'utilisateur. **Les Micros peuvent se lisser sur la semaine :**
+
+  | Nutriment | Homme Adulte | Femme Adulte | Cas particuliers (ANSES) |
+  | --- | --- | --- | --- |
+  | **Fibres** | **30 g / j** | **30 g / j** | Baseline universelle |
+  | **Fer** | **11 mg / j** | **16 mg / j** | Femme enceinte : **16-22 mg** |
+  | **Calcium** | **950 mg / j** | **950 mg / j** | Jeunes (19-23 ans) : **1000 mg** |
+  | **Magnésium** | **380 mg / j** | **300 mg / j** | - |
+  | **Vitamine C** | **110 mg / j** | **110 mg / j** | - |
+
+  - Le ratio cible : Le rapport $\text{Oméga-6} / \text{Oméga-3}$ doit être inférieur à 5 (idéalement proche de 4). La population moderne est souvent à plus de 15, ce qui est pro-inflammatoire.La règle algorithmique (Hebdomadaire) : Ton planificateur doit imposer au moins 2 repas par semaine contenant des poissons gras (saumon, sardine, maquereau, hareng) ou une source d'Oméga-3 végétal fort (huile de colza, noix, graines de lin) pour valider le sous-score lipidique.Les acides gras saturés : Limiter l'acide palmitique (viandes grasses, beurre, huile de palme) à moins de 8% de l'apport énergétique total.
+
+  - La charge glycémique globale de la journée : En utilisant l'Index Glycémique (IG) des aliments de tes recettes, calcule la Charge Glycémique de chaque repas :$$\text{CG} = \frac{\text{IG} \times \text{Quantité de glucides nets du repas (g)}}{100}$$
+  Le garde-fou : Ton algorithme doit veiller à ce que la somme des CG de la journée ne dépasse pas un score de 120 (CG haute), en privilégiant des repas à CG basse ($\le 10$) ou modérée ($11$ à $19$). C'est crucial pour les profils sédentaires ou en perte de poids pour éviter les fringales.
+
+  - Le ratio sodium / potassium : Ajoute une contrainte où le ratio moléculaire $\text{Sodium} / \text{Potassium}$ doit rester inférieur à 1. Si une recette est riche en sodium (ex: présence de feta, de saumon fumé ou de sauce soja), l'algorithme doit obligatoirement équilibrer le reste de la journée avec des aliments très riches en potassium (avocat, épinards, banane, pommes de terre).
+
+```typescript
+export interface MacroTargets {
+  proteinGrams: number;
+  fatGrams: number;
+  carbGrams: number;
+}
+
+/**
+ * Breaks down total daily calories into macronutrient grams based on ANSES guidelines.
+ */
+export function calculateMacroTargets(calories: number, weightKg: number, isSportProfile: boolean): MacroTargets {
+  let proteinCalories = 0;
+  
+  if (isSportProfile) {
+    // Athletic profile: base protein on body weight (e.g., 1.6g per kg)
+    const proteinGramsTarget = weightKg * 1.6;
+    proteinCalories = proteinGramsTarget * 4;
+  } else {
+    // Standard profile: 15% of total energy
+    proteinCalories = calories * 0.15;
+  }
+
+  // Lipids: ANSES recommends 35% to 40% of total energy
+  const fatCalories = calories * 0.35;
+
+  // Carbohydrates: Takes the remaining caloric budget
+  const carbCalories = calories - (proteinCalories + fatCalories);
+
+  return {
+    proteinGrams: Math.round(proteinCalories / 4),
+    fatGrams: Math.round(fatCalories / 9),
+    carbGrams: Math.round(carbCalories / 4),
+  };
+}
+
+```
+  
 - [] **EP1.11 [Daily Kcal Calculator] :** Écrire un module de calcul du Besoin Énergétique Journalier (BEJ) d'un utilisateur.
   - Il doit collecter le sexe, l'âge, le poids et la taille de l'utilisateur pour connaitre son métabolisme.
   - Il doit collecter des informations sur son activité physique en fonction de son activité quotidienne et ses activités sportives.
@@ -203,17 +270,15 @@ const dailyCalories = calculateDailyCaloricTarget(activeWomanProfile);
 console.log(`Daily caloric target: ${dailyCalories} kcal`); // Output: 1656 kcal
 ```
 
-$$Sel (g) = \frac{Sodium (mg) \times 2,5}{1000}$$
-
 ### [Sprint 4] Phase 3 : Génération Batch, Substitution Ciblée & Listes
 
-- [] **EP1.11 [API Batch Generation] :** Créer l'endpoint principal `POST /api/meals/generate`. Il reçoit les métadonnées de l'agenda, applique les filtres SQL, calcule la saisonnalité glissante complexe selon la date cible du lot, et transmet le catalogue qualifié à Gemini.
-- [] **EP1.12 [API Single Replacement & Cible Énergétique] :** Développer l'endpoint de remplacement ciblé `POST /api/meals/replace-single`.
+- [] **EP1.12 [API Batch Generation] :** Créer l'endpoint principal `POST /api/meals/generate`. Il reçoit les métadonnées de l'agenda, applique les filtres SQL, calcule la saisonnalité glissante complexe selon la date cible du lot, et transmet le catalogue qualifié à Gemini.
+- [] **EP1.13 [API Single Replacement & Cible Énergétique] :** Développer l'endpoint de remplacement ciblé `POST /api/meals/replace-single`.
 - [] **Payload requis :** `recipe_id_rejete`, `date_cible`, `couverts`, `recettes_conservees_ids`, et `target_macros` (les macros exactes du plat rejeté).
 - [] **Logique :** L'algorithme isole le créneau, applique la saisonnalité glissante du mois cible, calcule l'anti-redondance (DB + recettes conservées), exclut la recette rejetée et contraint l'IA à piocher une recette respectant le couloir calorique et de sel restant (`target_macros`).
 
-- [] **EP1.13 [API Planning Unitaire Save] :** Implémenter `POST /api/meals/save`. **Règle d'architecture :** Interdiction de faire un `DELETE` global de la semaine passée. Les nouveaux repas sont insérés ligne par ligne avec leur horodatage et leur date cible (`date_repas`), tandis que les anciens repas passent simplement au statut de métrique d'archive pour maintenir la mémoire de l'anti-redondance.
-- [] **EP1.14 [API Shopping List Multi-Couverts] :** Concevoir le compilateur de liste de courses. Il somme les ingrédients nets nécessaires au planning actif (en multipliant les ingrédients par le nombre de couverts spécifique à *chaque* créneau de repas), puis soustrait les ingrédients cochés comme disponibles dans le `garde_manger`.
+- [] **EP1.14 [API Planning Unitaire Save] :** Implémenter `POST /api/meals/save`. **Règle d'architecture :** Interdiction de faire un `DELETE` global de la semaine passée. Les nouveaux repas sont insérés ligne par ligne avec leur horodatage et leur date cible (`date_repas`), tandis que les anciens repas passent simplement au statut de métrique d'archive pour maintenir la mémoire de l'anti-redondance.
+- [] **EP1.15 [API Shopping List Multi-Couverts] :** Concevoir le compilateur de liste de courses. Il somme les ingrédients nets nécessaires au planning actif (en multipliant les ingrédients par le nombre de couverts spécifique à *chaque* créneau de repas), puis soustrait les ingrédients cochés comme disponibles dans le `garde_manger`.
 
 ---
 
@@ -378,3 +443,88 @@ Pour garantir l'indépendance des développeurs frontend et backend lors des dé
 }
 
 ```
+
+---
+
+## NOTES
+
+### Liste des régimes alimentaires
+
+#### Principaux
+
+Végétarien, Végétalien, Pescétarien, Flexitarien, Sans porc, Halal, Cascher
+
+#### Secondaires
+
+Réduit en sel, Anti-cholestérol, Diabète Index Glycémique Bas, Pauvre en FODMAPs, Pauvre en fibres, Cétogène, Low Carb, Paléo
+
+### Liste des allergènes
+
+Gluten, Crustacés, Œufs, Poissons, Arachides, Soja, Lait, Fruits à coque, Céleri, Moutarde, Sésame, Sulfites, Lupin, Mollusques
+
+### Liste des équipements
+
+Plaques de cuisson, four traditionnel, four à micro-ondes, airfryer, cuiseur vapeur, grille-pain
+
+### Liste des pantries
+
+#### 1. Les Féculents & Céréales (La base texturante)
+
+- **Riz :** Blanc (basmati, jasmin), complet, arborio (pour risotto).
+- **Pâtes :** Courtes (penne, fusilli) et longues (spaghetti).
+- **Autres grains :** Semoule de blé (couscous), quinoa, boulgour, polenta, avoine (flocons).
+- **Légumes secs (Secs ou en conserve) :** Lentilles (vertes, corail), pois chiches, haricots (rouges, blancs).
+
+---
+
+#### 2. Les Farines & Produits de Boulangerie
+
+- **Farines :** Farine de blé (T55, T65), farines alternatives (sarrasin, maïs, riz).
+- **Fécules :** Fécule de maïs (Maïzena) ou de pomme de terre.
+- **Boulangerie longue conservation :** Pain de mie, biscottes, tortillas de blé/maïs, chapelure.
+- **Aides à la pâtisserie :** Sucre (blanc, roux, glace), levure chimique, levure boulangère sèche, extrait de vanille, cacao en poudre.
+
+---
+
+#### 3. Les Conserves, Bocaux & Liquides de cuisson
+
+- **Tomates :** Coulis, tomates concassées, concentré de tomate.
+- **Poissons en conserve :** Thon, sardines, maquereaux.
+- **Laitages ambiants :** Lait UHT, lait de coco en conserve, crèmes liquides végétales ou UHT.
+- **Bouillons :** Cubes ou poudres de bouillon (volaille, légumes, bœuf).
+
+---
+
+#### 4. Les Matières Grasses, Vinaigres & Condiments Ambiants
+
+- **Huiles de cuisson & assaisonnement :** Huile d'olive, huile de tournesol ou de colza, huile de sésame.
+- **Vinaigres :** Vinaigre de vin rouge, de cidre, blanc, balsamique.
+- **Sauces & Condiments (avant ouverture) :** Sauce soja, moutarde, ketchup, mayonnaise, sauce sriracha ou pimentée.
+
+---
+
+#### 5. Les Épices, Herbes Sèches & Aromates durables
+
+- **Aromates longue conservation :** Ail, oignons, échalotes (se conservent au sec et à l'ombre, hors du frigo).
+- **Épices moulues ou en grains :** Sel, poivre noir, cumin, paprika (doux, fumé), curcuma, curry, cannelle, piment de Cayenne.
+- **Herbes séchées :** Herbes de Provence, origan, thym, laurier.
+
+---
+
+#### 6. Les Graines, Oléagineux & Sucres d'assaisonnement
+
+- **Fruits secs & Graines :** Noix, amandes, noisettes, graines de sésame, de courge, de chia.
+- **Produits à tartiner / Sucrants liquides :** Miel, sirop d'érable, beurre de cacahuète.
+
+### La répartition de la charge calorique (La chrononutrition)
+
+Le corps ne gère pas les nutriments de la même manière à 7h du matin et à 21h. Un énorme repas le soir perturbe le sommeil et favorise le stockage nocturne.
+
+Ton algorithme doit distribuer le budget calorique calculé selon une courbe logique sur la journée. L'ANSES recommande la répartition classique suivante :
+
+| Repas | Part du budget calorique journalier | Note diététique pour l'algo |
+| --- | --- | --- |
+| **Petit-déjeuner** | **20% à 25%** | Plutôt riche en lipides et protéines (satiété). |
+| **Déjeuner** | **35% à 40%** | Le repas pivot, équilibré (le plus complexe à gérer en restes). |
+| **Collation (Optionnelle)** | **10%** | À activer si la fenêtre entre midi et le soir dépasse 6 heures. |
+| **Dîner** | **25% à 30%** | Plus léger, pauvre en acides gras saturés pour préserver le sommeil. |

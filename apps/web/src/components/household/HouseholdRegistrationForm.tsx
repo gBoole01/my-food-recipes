@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { HouseholdRegistrationRequest } from "@my-food-recipes/contracts";
+import type { EnergyInput, EnergyResponse, Household, HouseholdRegistrationRequest } from "@my-food-recipes/contracts";
 import { Card } from "../ui/Card";
 import { EquipmentToggleGrid } from "./EquipmentToggleGrid";
 import { MemberForm } from "./MemberForm";
@@ -10,8 +10,10 @@ import { EQUIPMENT_OPTIONS } from "./vocabulary";
 
 export function HouseholdRegistrationForm({
   onRegister,
+  onUpdateMemberEnergy,
 }: {
-  onRegister: (input: HouseholdRegistrationRequest) => Promise<unknown>;
+  onRegister: (input: HouseholdRegistrationRequest) => Promise<Household>;
+  onUpdateMemberEnergy: (memberId: string, input: EnergyInput) => Promise<EnergyResponse>;
 }) {
   const [equipment, setEquipment] = useState<string[]>(EQUIPMENT_OPTIONS.map((o) => o.value));
   const [pantryStaples, setPantryStaples] = useState<string[]>([]);
@@ -47,10 +49,13 @@ export function HouseholdRegistrationForm({
         <p className="mb-3 text-sm font-bold">Premier membre du foyer</p>
         <MemberForm
           submitLabel="Créer mon foyer"
-          onSubmit={async (values) => {
+          onSubmit={async (values, energy) => {
             setError(null);
             try {
-              await onRegister({ equipment, pantryStaples, members: [values] });
+              const household = await onRegister({ equipment, pantryStaples, members: [values] });
+              if (energy && household.members[0]) {
+                await onUpdateMemberEnergy(household.members[0].id, energy);
+              }
             } catch {
               setError("Impossible de créer le foyer. Réessayez.");
             }

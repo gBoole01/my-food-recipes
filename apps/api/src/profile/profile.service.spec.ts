@@ -20,8 +20,7 @@ function fakeMember(overrides: Partial<MemberProfile> = {}): MemberProfile {
     name: 'Papa',
     primaryGoal: 'stabilisation',
     dailyCaloriesTarget: 2200,
-    maxSodiumMg: 2300,
-    consumptionTrackingEnabled: true,
+
     diet: 'omnivore',
     createdAt: new Date('2026-01-01T00:00:00.000Z'),
     updatedAt: new Date('2026-01-01T00:00:00.000Z'),
@@ -155,8 +154,7 @@ describe('ProfileService', () => {
             name: 'Papa',
             primaryGoal: 'stabilisation',
             dailyCaloriesTarget: 2200,
-            maxSodiumMg: 2300,
-            consumptionTrackingEnabled: true,
+        
             diet: 'omnivore',
             allergens: ['arachide'],
             excludedIngredients: ['coriandre'],
@@ -217,8 +215,7 @@ describe('ProfileService', () => {
         name: 'Léa',
         primaryGoal: 'sante_cardio',
         dailyCaloriesTarget: 1800,
-        maxSodiumMg: 2000,
-        consumptionTrackingEnabled: true,
+    
         diet: 'omnivore',
         allergens: [],
         excludedIngredients: [],
@@ -236,8 +233,7 @@ describe('ProfileService', () => {
           name: 'Léa',
           primaryGoal: 'sante_cardio',
           dailyCaloriesTarget: 1800,
-          maxSodiumMg: 2000,
-          consumptionTrackingEnabled: true,
+      
           diet: 'omnivore',
           allergens: [],
           excludedIngredients: [],

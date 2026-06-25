@@ -2,10 +2,13 @@
 
 import { useCallback, useEffect, useReducer } from "react";
 import type {
+  EnergyInput,
+  EnergyResponse,
   EquipmentPatchRequest,
   Household,
   HouseholdRegistrationRequest,
   MemberInput,
+  MemberProfile,
   MemberUpdateRequest,
   PantryPatchRequest,
 } from "@my-food-recipes/contracts";
@@ -58,9 +61,10 @@ export function useHousehold() {
   }, []);
 
   const addMember = useCallback(
-    async (input: MemberInput) => {
-      await profileApi.addMember(input);
+    async (input: MemberInput): Promise<MemberProfile> => {
+      const member = await profileApi.addMember(input);
       await load();
+      return member;
     },
     [load],
   );
@@ -91,6 +95,15 @@ export function useHousehold() {
     dispatch({ type: "FETCH_SUCCESS", household: result });
   }, []);
 
+  const updateMemberEnergy = useCallback(
+    async (memberId: string, input: EnergyInput): Promise<EnergyResponse> => {
+      const result = await profileApi.updateMemberEnergy(memberId, input);
+      await load();
+      return result;
+    },
+    [load],
+  );
+
   return {
     household,
     request,
@@ -101,5 +114,6 @@ export function useHousehold() {
     removeMember,
     updateEquipment,
     updatePantry,
+    updateMemberEnergy,
   };
 }

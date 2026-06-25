@@ -48,17 +48,38 @@ export class MemberProfile {
   @Column('integer', { name: 'daily_calories_target' })
   dailyCaloriesTarget!: number;
 
-  @Column('integer', { name: 'max_sodium_mg' })
-  maxSodiumMg!: number;
-
-  @Column('boolean', {
-    name: 'consumption_tracking_enabled',
-    default: true,
-  })
-  consumptionTrackingEnabled!: boolean;
-
   @Column({ type: 'varchar', name: 'diet' })
   diet!: Diet;
+
+  @Column({ type: 'varchar', nullable: true, name: 'gender' })
+  gender?: string | null;
+
+  @Column({ type: 'date', nullable: true, name: 'birth_date' })
+  birthDate?: string | null;
+
+  @Column({ type: 'float', nullable: true, name: 'weight_kg' })
+  weightKg?: number | null;
+
+  @Column({ type: 'float', nullable: true, name: 'height_cm' })
+  heightCm?: number | null;
+
+  @Column({ type: 'float', nullable: true, name: 'sitting_hours' })
+  sittingHours?: number | null;
+
+  @Column({ type: 'float', nullable: true, name: 'standing_light_hours' })
+  standingLightHours?: number | null;
+
+  @Column({ type: 'float', nullable: true, name: 'moderate_sport_hours' })
+  moderateSportHours?: number | null;
+
+  @Column({ type: 'float', nullable: true, name: 'intense_sport_hours' })
+  intenseSportHours?: number | null;
+
+  @Column({ type: 'varchar', nullable: true, name: 'special_condition' })
+  specialCondition?: string | null;
+
+  @Column({ type: 'integer', nullable: true, name: 'pregnancy_trimester' })
+  pregnancyTrimester?: number | null;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;

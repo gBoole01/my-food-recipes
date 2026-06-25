@@ -1,11 +1,6 @@
 import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, EntityManager, Repository } from 'typeorm';
-import {
+  EnergyInput,
+  EnergyResponse as EnergyResponseDto,
   EquipmentPatchRequest,
   Household as HouseholdDto,
   HouseholdRegistrationRequest,
@@ -17,13 +12,29 @@ import {
   RecipeFeedbackRequest,
   RestrictionsPatchRequest,
 } from '@my-food-recipes/contracts';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DataSource, EntityManager, Repository } from 'typeorm';
 import { Recipe } from '../recipes/recipe.entity';
-import { Household } from './household.entity';
+import {
+  BmiCategory,
+  Goal,
+  SpecialCondition,
+  calculateBmi,
+  calculateDailyCaloricTarget,
+  calculatePAL,
+  getBmiCategory,
+} from './daily-kcal-calculator';
 import { HouseholdEquipment } from './household-equipment.entity';
 import { HouseholdPantryStaple } from './household-pantry-staple.entity';
+import { Household } from './household.entity';
 import { MemberAllergen } from './member-allergen.entity';
 import { MemberExcludedIngredient } from './member-excluded-ingredient.entity';
-import { MemberProfile } from './member-profile.entity';
+import { MemberProfile, PrimaryGoal } from './member-profile.entity';
 import { RecipeFeedback } from './recipe-feedback.entity';
 
 @Injectable()
@@ -277,6 +288,61 @@ export class ProfileService {
     return toFeedbackResponse(feedback);
   }
 
+  async updateMemberEnergy(
+    memberId: string,
+    input: EnergyInput,
+  ): Promise<EnergyResponseDto> {
+    const member = await this.getMemberEntity(memberId);
+
+    const pal = calculatePAL({
+      sittingHours: input.sittingHours,
+      standingLightHours: input.standingLightHours,
+      moderateSportHours: input.moderateSportHours,
+      intenseSportHours: input.intenseSportHours,
+    });
+
+    const birthDate = new Date(input.birthDate + 'T00:00:00');
+    const today = new Date();
+    let ageYears = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
+      ageYears--;
+    }
+
+    const dailyCaloriesTarget = calculateDailyCaloricTarget({
+      gender: input.gender,
+      weightKg: input.weightKg,
+      heightCm: input.heightCm,
+      ageYears,
+      pal,
+      goal: mapPrimaryGoalToGoal(member.primaryGoal),
+      specialCondition: input.specialCondition as SpecialCondition | undefined,
+      pregnancyTrimester: input.pregnancyTrimester,
+    });
+
+    const bmi = calculateBmi(input.weightKg, input.heightCm);
+    const bmiCategory = getBmiCategory(bmi);
+
+    await this.memberRepository.update(memberId, {
+      gender: input.gender,
+      birthDate: input.birthDate,
+      weightKg: input.weightKg,
+      heightCm: input.heightCm,
+      sittingHours: input.sittingHours,
+      standingLightHours: input.standingLightHours,
+      moderateSportHours: input.moderateSportHours,
+      intenseSportHours: input.intenseSportHours,
+      specialCondition: input.specialCondition ?? null,
+      pregnancyTrimester: input.pregnancyTrimester ?? null,
+      dailyCaloriesTarget,
+    });
+
+    return { dailyCaloriesTarget, pal, bmi, bmiCategory };
+  }
+
   private async getHouseholdEntity(): Promise<Household> {
     const households = await this.householdRepository.find({ take: 1 });
     const household = households[0];
@@ -298,8 +364,6 @@ export class ProfileService {
         name: input.name,
         primaryGoal: input.primaryGoal,
         dailyCaloriesTarget: input.dailyCaloriesTarget,
-        maxSodiumMg: input.maxSodiumMg,
-        consumptionTrackingEnabled: input.consumptionTrackingEnabled,
         diet: input.diet,
       }),
     );
@@ -345,18 +409,36 @@ export class ProfileService {
 }
 
 function toMemberResponse(member: MemberProfile): MemberProfileDto {
+  const bmi =
+    member.weightKg != null && member.heightCm != null
+      ? calculateBmi(member.weightKg, member.heightCm)
+      : null;
+
   return {
     id: member.id,
     name: member.name,
     primaryGoal: member.primaryGoal,
     dailyCaloriesTarget: member.dailyCaloriesTarget,
-    maxSodiumMg: member.maxSodiumMg,
-    consumptionTrackingEnabled: member.consumptionTrackingEnabled,
     diet: member.diet,
     allergens: (member.allergens ?? []).map((a) => a.allergen),
     excludedIngredients: (member.excludedIngredients ?? []).map(
       (e) => e.ingredientName,
     ),
+    gender: (member.gender as MemberProfileDto['gender']) ?? null,
+    birthDate: member.birthDate ?? null,
+    weightKg: member.weightKg ?? null,
+    heightCm: member.heightCm ?? null,
+    sittingHours: member.sittingHours ?? null,
+    standingLightHours: member.standingLightHours ?? null,
+    moderateSportHours: member.moderateSportHours ?? null,
+    intenseSportHours: member.intenseSportHours ?? null,
+    specialCondition:
+      (member.specialCondition as MemberProfileDto['specialCondition']) ?? null,
+    pregnancyTrimester:
+      (member.pregnancyTrimester as MemberProfileDto['pregnancyTrimester']) ??
+      null,
+    bmi: bmi ?? null,
+    bmiCategory: bmi != null ? (getBmiCategory(bmi) as BmiCategory) : null,
     createdAt: member.createdAt.toISOString(),
     updatedAt: member.updatedAt.toISOString(),
   };
@@ -370,6 +452,17 @@ function toFeedbackResponse(feedback: RecipeFeedback): RecipeFeedbackDto {
     createdAt: feedback.createdAt.toISOString(),
     updatedAt: feedback.updatedAt.toISOString(),
   };
+}
+
+function mapPrimaryGoalToGoal(primaryGoal: PrimaryGoal): Goal {
+  switch (primaryGoal) {
+    case 'perte_de_poids':
+      return 'loss';
+    case 'prise_de_masse':
+      return 'gain';
+    default:
+      return 'maintenance';
+  }
 }
 
 function toHouseholdResponse(household: Household): HouseholdDto {

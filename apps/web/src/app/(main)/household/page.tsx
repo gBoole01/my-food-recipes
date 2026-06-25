@@ -23,6 +23,7 @@ export default function HouseholdPage() {
     removeMember,
     updateEquipment,
     updatePantry,
+    updateMemberEnergy,
   } = useHousehold();
   const [addingMember, setAddingMember] = useState(false);
 
@@ -40,7 +41,7 @@ export default function HouseholdPage() {
   }
 
   if (!household) {
-    return <HouseholdRegistrationForm onRegister={register} />;
+    return <HouseholdRegistrationForm onRegister={register} onUpdateMemberEnergy={updateMemberEnergy} />;
   }
 
   const toggleEquipment = (value: string) => {
@@ -83,9 +84,9 @@ export default function HouseholdPage() {
           <Card className="p-4">
             <MemberForm
               submitLabel="Ajouter"
-              onSubmit={async (values) => {
-                await addMember(values);
-                setAddingMember(false);
+              onSubmit={async (values, energy) => {
+                const member = await addMember(values);
+                if (energy) await updateMemberEnergy(member.id, energy);
               }}
               onCancel={() => setAddingMember(false)}
             />
@@ -93,7 +94,13 @@ export default function HouseholdPage() {
         )}
 
         {household.members.map((member) => (
-          <MemberCard key={member.id} member={member} onUpdate={updateMember} onRemove={removeMember} />
+          <MemberCard
+            key={member.id}
+            member={member}
+            onUpdate={updateMember}
+            onRemove={removeMember}
+            onUpdateEnergy={updateMemberEnergy}
+          />
         ))}
       </div>
     </div>

@@ -8,6 +8,7 @@ import {
   Post,
 } from '@nestjs/common';
 import {
+  EnergyInputSchema,
   EquipmentPatchRequestSchema,
   HouseholdRegistrationRequestSchema,
   MemberInputSchema,
@@ -82,5 +83,14 @@ export class ProfileController {
   ) {
     const input = RecipeFeedbackRequestSchema.parse(body);
     return this.profileService.recordFeedback(memberId, input);
+  }
+
+  @Patch('members/:memberId/energy')
+  async updateMemberEnergy(
+    @Param('memberId') memberId: string,
+    @Body() body: unknown,
+  ) {
+    const input = EnergyInputSchema.parse(body);
+    return this.profileService.updateMemberEnergy(memberId, input);
   }
 }

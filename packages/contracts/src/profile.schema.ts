@@ -34,6 +34,20 @@ export const PrimaryGoalSchema = z.enum([
 ]);
 export type PrimaryGoal = z.infer<typeof PrimaryGoalSchema>;
 
+export const GenderSchema = z.enum(['M', 'F']);
+export type Gender = z.infer<typeof GenderSchema>;
+
+export const BmiCategorySchema = z.enum([
+  'insuffisant',
+  'normal',
+  'surpoids',
+  'obese',
+]);
+export type BmiCategory = z.infer<typeof BmiCategorySchema>;
+
+export const SpecialConditionSchema = z.enum(['pregnant', 'breastfeeding']);
+export type SpecialCondition = z.infer<typeof SpecialConditionSchema>;
+
 export const DietSchema = z.enum([
   'omnivore',
   'vegetarien',
@@ -47,8 +61,6 @@ export const MemberInputSchema = z.object({
   name: z.string().min(1),
   primaryGoal: PrimaryGoalSchema,
   dailyCaloriesTarget: z.number().int().positive(),
-  maxSodiumMg: z.number().int().positive(),
-  consumptionTrackingEnabled: z.boolean().optional().default(true),
   diet: DietSchema,
   allergens: z.array(z.string()).optional().default([]),
   excludedIngredients: z.array(z.string()).optional().default([]),
@@ -72,15 +84,59 @@ export const MemberProfileSchema = z.object({
   name: z.string(),
   primaryGoal: PrimaryGoalSchema,
   dailyCaloriesTarget: z.number().int(),
-  maxSodiumMg: z.number().int(),
-  consumptionTrackingEnabled: z.boolean(),
   diet: DietSchema,
   allergens: z.array(z.string()),
   excludedIngredients: z.array(z.string()),
+  gender: GenderSchema.nullish(),
+  birthDate: z.string().nullish(),
+  weightKg: z.number().nullish(),
+  heightCm: z.number().nullish(),
+  sittingHours: z.number().nullish(),
+  standingLightHours: z.number().nullish(),
+  moderateSportHours: z.number().nullish(),
+  intenseSportHours: z.number().nullish(),
+  specialCondition: SpecialConditionSchema.nullish(),
+  pregnancyTrimester: z.union([z.literal(1), z.literal(2), z.literal(3)]).nullish(),
+  bmi: z.number().nullish(),
+  bmiCategory: BmiCategorySchema.nullish(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });
 export type MemberProfile = z.infer<typeof MemberProfileSchema>;
+
+export const EnergyInputSchema = z
+  .object({
+    gender: GenderSchema,
+    birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    weightKg: z.number().positive(),
+    heightCm: z.number().positive(),
+    sittingHours: z.number().min(0),
+    standingLightHours: z.number().min(0),
+    moderateSportHours: z.number().min(0),
+    intenseSportHours: z.number().min(0),
+    specialCondition: SpecialConditionSchema.optional(),
+    pregnancyTrimester: z
+      .union([z.literal(1), z.literal(2), z.literal(3)])
+      .optional(),
+  })
+  .refine(
+    (d) =>
+      d.sittingHours +
+        d.standingLightHours +
+        d.moderateSportHours +
+        d.intenseSportHours <=
+      24,
+    { message: 'Total activity hours cannot exceed 24 hours.' },
+  );
+export type EnergyInput = z.infer<typeof EnergyInputSchema>;
+
+export const EnergyResponseSchema = z.object({
+  dailyCaloriesTarget: z.number().int(),
+  pal: z.number(),
+  bmi: z.number(),
+  bmiCategory: BmiCategorySchema,
+});
+export type EnergyResponse = z.infer<typeof EnergyResponseSchema>;
 
 export const HouseholdSchema = z.object({
   id: z.string(),

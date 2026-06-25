@@ -1,4 +1,6 @@
 import type {
+  EnergyInput,
+  EnergyResponse,
   EquipmentPatchRequest,
   Household,
   HouseholdRegistrationRequest,
@@ -55,6 +57,16 @@ export function recordFeedback(
 ): Promise<RecipeFeedback> {
   return postJson<RecipeFeedbackRequest, RecipeFeedback>(
     `/api/profile/members/${memberId}/feedback`,
+    input,
+  );
+}
+
+export function updateMemberEnergy(
+  memberId: string,
+  input: EnergyInput,
+): Promise<EnergyResponse> {
+  return patchJson<EnergyInput, EnergyResponse>(
+    `/api/profile/members/${memberId}/energy`,
     input,
   );
 }
