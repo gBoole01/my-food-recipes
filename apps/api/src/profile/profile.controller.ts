@@ -34,6 +34,11 @@ export class ProfileController {
     return this.profileService.getHousehold();
   }
 
+  @Get('pantry-staples')
+  async getGlobalPantryStaples() {
+    return this.profileService.getGlobalPantryStaples();
+  }
+
   @Post('members')
   async addMember(@Body() body: unknown) {
     const input = MemberInputSchema.parse(body);

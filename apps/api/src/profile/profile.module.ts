@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { GlobalPantryStaple } from '../admin/global-pantry-staple.entity';
 import { RecipesModule } from '../recipes/recipes.module';
 import { Household } from './household.entity';
 import { HouseholdEquipment } from './household-equipment.entity';
@@ -23,6 +24,7 @@ import { RecipeFeedback } from './recipe-feedback.entity';
       MemberExcludedIngredient,
       MemberCategoryExclusion,
       RecipeFeedback,
+      GlobalPantryStaple,
     ]),
     RecipesModule,
   ],

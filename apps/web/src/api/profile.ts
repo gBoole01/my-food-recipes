@@ -2,6 +2,7 @@ import type {
   EnergyInput,
   EnergyResponse,
   EquipmentPatchRequest,
+  GlobalPantryStaple,
   Household,
   HouseholdRegistrationRequest,
   MemberInput,
@@ -18,6 +19,10 @@ import { ApiError, deleteJson, getJson, patchJson, postJson } from "./client";
 // USE_MOCKS only covers the legacy chat -> recipes -> shopping-list flow
 // (apps/web/src/api/{recipes,shoppingList,chat}.ts), and the point of these
 // pages is to view/manage real persisted data, not a mocked stand-in.
+
+export function getGlobalPantryStaples(): Promise<GlobalPantryStaple[]> {
+  return getJson<GlobalPantryStaple[]>("/api/profile/pantry-staples");
+}
 
 export async function getHousehold(): Promise<Household | null> {
   try {

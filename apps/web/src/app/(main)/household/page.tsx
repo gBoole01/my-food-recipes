@@ -5,7 +5,7 @@ import { EquipmentToggleGrid } from "@/components/household/EquipmentToggleGrid"
 import { HouseholdRegistrationForm } from "@/components/household/HouseholdRegistrationForm";
 import { MemberCard } from "@/components/household/MemberCard";
 import { MemberForm } from "@/components/household/MemberForm";
-import { TagListEditor } from "@/components/household/TagListEditor";
+import { PantryStapleToggleGrid } from "@/components/household/PantryStapleToggleGrid";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { ErrorBanner } from "@/components/ui/ErrorBanner";
@@ -51,6 +51,13 @@ export default function HouseholdPage() {
     void updateEquipment({ equipment: next });
   };
 
+  const togglePantryStaple = (name: string) => {
+    const next = household.pantryStaples.includes(name)
+      ? household.pantryStaples.filter((v) => v !== name)
+      : [...household.pantryStaples, name];
+    void updatePantry({ pantryStaples: next });
+  };
+
   return (
     <div className="flex flex-col gap-6 pb-12">
       <div>
@@ -64,12 +71,8 @@ export default function HouseholdPage() {
       </Card>
 
       <Card className="p-4">
-        <TagListEditor
-          label="Fond de placard"
-          values={household.pantryStaples}
-          onChange={(next) => void updatePantry({ pantryStaples: next })}
-          placeholder="Ex : Sel, Poivre, Huile d'olive"
-        />
+        <p className="mb-3 text-sm font-bold">Fond de placard</p>
+        <PantryStapleToggleGrid selected={household.pantryStaples} onToggle={togglePantryStaple} />
       </Card>
 
       <div className="flex flex-col gap-4">

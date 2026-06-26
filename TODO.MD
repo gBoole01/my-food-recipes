@@ -191,7 +191,7 @@ Ce module est conçu pour permettre à vos équipes éditoriales, diététiques 
 - *Interface :* Tableau croisé (Ingrédients $\times$ Mois de l'année) sous forme de cases à cocher.
 - *Utilité :* Permet de modifier instantanément les mois de haute saisonnalité d'un produit pour ajuster l'algorithme glissant de l'application en cas d'aléa climatique, sans déploiement technique.
 
-- [] **EP4.5 [Pantry Staples Configurator] :**
+- [x] **EP4.5 [Pantry Staples Configurator] :**
 - *Interface :* Liste des ingrédients globaux avec un interrupteur (Toggle) **"Fond de placard universel"**.
 - *Logique :* Tout ingrédient marqué comme tel (ex: sel, poivre, eau, filet d'huile d'olive) est **exclu nativement de la compilation de la liste de courses de l'utilisateur (`EP1.14`)**, allégeant considérablement l'affichage pour l'utilisateur final.
 

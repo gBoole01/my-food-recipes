@@ -2,6 +2,7 @@ import {
   EnergyInput,
   EnergyResponse as EnergyResponseDto,
   EquipmentPatchRequest,
+  GlobalPantryStaple as GlobalPantryStapleDto,
   Household as HouseholdDto,
   HouseholdRegistrationRequest,
   MemberInput,
@@ -19,6 +20,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, Repository } from 'typeorm';
+import { GlobalPantryStaple } from '../admin/global-pantry-staple.entity';
 import { Recipe } from '../recipes/recipe.entity';
 import {
   BmiCategory,
@@ -49,7 +51,16 @@ export class ProfileService {
     private readonly recipeRepository: Repository<Recipe>,
     @InjectRepository(RecipeFeedback)
     private readonly recipeFeedbackRepository: Repository<RecipeFeedback>,
+    @InjectRepository(GlobalPantryStaple)
+    private readonly globalPantryStapleRepository: Repository<GlobalPantryStaple>,
   ) {}
+
+  async getGlobalPantryStaples(): Promise<GlobalPantryStapleDto[]> {
+    const rows = await this.globalPantryStapleRepository.find({
+      order: { name: 'ASC' },
+    });
+    return rows.map((r) => ({ id: r.id, name: r.name }));
+  }
 
   async registerHousehold(
     input: HouseholdRegistrationRequest,
