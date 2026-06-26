@@ -39,6 +39,7 @@ function fakeMember(overrides: Partial<MemberProfile> = {}): MemberProfile {
         member: undefined as never,
       },
     ],
+    categoryExclusions: [],
     ...overrides,
   };
 }

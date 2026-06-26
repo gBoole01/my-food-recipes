@@ -17,7 +17,7 @@ export class RecipeFeedback {
   @PrimaryColumn('uuid', { name: 'member_id' })
   memberId!: string;
 
-  @PrimaryColumn('varchar', { name: 'recipe_id' })
+  @PrimaryColumn('uuid', { name: 'recipe_id' })
   recipeId!: string;
 
   @ManyToOne(() => MemberProfile, { onDelete: 'CASCADE' })

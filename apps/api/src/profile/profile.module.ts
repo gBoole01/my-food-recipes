@@ -5,6 +5,7 @@ import { Household } from './household.entity';
 import { HouseholdEquipment } from './household-equipment.entity';
 import { HouseholdPantryStaple } from './household-pantry-staple.entity';
 import { MemberAllergen } from './member-allergen.entity';
+import { MemberCategoryExclusion } from './member-category-exclusion.entity';
 import { MemberExcludedIngredient } from './member-excluded-ingredient.entity';
 import { MemberProfile } from './member-profile.entity';
 import { ProfileController } from './profile.controller';
@@ -20,6 +21,7 @@ import { RecipeFeedback } from './recipe-feedback.entity';
       MemberProfile,
       MemberAllergen,
       MemberExcludedIngredient,
+      MemberCategoryExclusion,
       RecipeFeedback,
     ]),
     RecipesModule,

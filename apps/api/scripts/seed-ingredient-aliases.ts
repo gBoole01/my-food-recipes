@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 import { join } from 'path';
 import { DataSource } from 'typeorm';
+import { FoodCategory } from '../src/nutrition/food-category.entity';
 import { FoodNutrition } from '../src/nutrition/food-nutrition.entity';
 import { IngredientAlias } from '../src/nutrition/ingredient-alias.entity';
 import { INGREDIENT_ALIAS_MAPPING } from './ingredient-alias-mapping.data';
@@ -11,7 +12,7 @@ async function main(): Promise<void> {
   const dataSource = new DataSource({
     type: 'postgres',
     url: process.env.DATABASE_URL,
-    entities: [FoodNutrition, IngredientAlias],
+    entities: [FoodCategory, FoodNutrition, IngredientAlias],
     synchronize: process.env.NODE_ENV !== 'production',
   });
   await dataSource.initialize();

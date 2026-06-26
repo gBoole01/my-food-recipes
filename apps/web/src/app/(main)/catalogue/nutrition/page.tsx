@@ -55,7 +55,7 @@ export default function CatalogueNutritionPage() {
               {items.map((item) => (
                 <tr key={item.id} className="border-t border-border">
                   <td className="p-3 font-semibold">{item.nameFr}</td>
-                  <td className="p-3 text-muted">{item.groupName}</td>
+                  <td className="p-3 text-muted">{item.categoryName ?? '—'}</td>
                   <td className="p-3 text-right">{formatNumber(item.energyKcal)}</td>
                   <td className="p-3 text-right">{formatNumber(item.protein)}</td>
                   <td className="p-3 text-right">{formatNumber(item.carbohydrate)}</td>

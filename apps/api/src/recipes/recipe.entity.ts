@@ -1,11 +1,11 @@
-import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { RecipeIngredient } from './recipe-ingredient.entity';
 
 export type RecipeStatus = 'draft' | 'test' | 'published';
 
 @Entity('recipes')
 export class Recipe {
-  @PrimaryColumn('varchar')
+  @PrimaryGeneratedColumn('uuid')
   id!: string;
 
   @Column()

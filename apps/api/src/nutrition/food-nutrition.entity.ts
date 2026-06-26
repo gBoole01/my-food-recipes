@@ -1,4 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { FoodCategory } from './food-category.entity';
 
 @Entity('food_nutrition')
 export class FoodNutrition {
@@ -8,29 +16,20 @@ export class FoodNutrition {
   @Column({ name: 'alim_code', unique: true })
   alimCode!: string;
 
+  @Index()
   @Column({ name: 'name_fr' })
   nameFr!: string;
 
   @Column({ type: 'varchar', name: 'name_scientific', nullable: true })
   nameScientific!: string | null;
 
-  @Column({ name: 'group_code' })
-  groupCode!: string;
+  @Index()
+  @Column({ type: 'uuid', name: 'category_id', nullable: true })
+  categoryId!: string | null;
 
-  @Column({ name: 'group_name' })
-  groupName!: string;
-
-  @Column({ name: 'subgroup_code' })
-  subgroupCode!: string;
-
-  @Column({ name: 'subgroup_name' })
-  subgroupName!: string;
-
-  @Column({ name: 'sub_subgroup_code' })
-  subSubgroupCode!: string;
-
-  @Column({ name: 'sub_subgroup_name' })
-  subSubgroupName!: string;
+  @ManyToOne(() => FoodCategory, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'category_id' })
+  category?: FoodCategory;
 
   @Column('double precision', { name: 'energy_kj', nullable: true })
   energyKj!: number | null;

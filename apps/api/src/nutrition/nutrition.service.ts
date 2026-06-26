@@ -21,6 +21,7 @@ export class NutritionService {
 
     const qb = this.foodNutritionRepository
       .createQueryBuilder('food')
+      .leftJoinAndSelect('food.category', 'category')
       .orderBy('food.nameFr', 'ASC')
       .skip((page - 1) * PAGE_SIZE)
       .take(PAGE_SIZE);
@@ -36,8 +37,7 @@ export class NutritionService {
         id: food.id,
         alimCode: food.alimCode,
         nameFr: food.nameFr,
-        groupName: food.groupName,
-        subgroupName: food.subgroupName,
+        categoryName: food.category?.name ?? null,
         energyKcal: food.energyKcal,
         protein: food.protein,
         carbohydrate: food.carbohydrate,

@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('user_planning')
 export class UserPlanning {
@@ -11,7 +11,8 @@ export class UserPlanning {
   @Column('uuid', { name: 'member_id', nullable: true })
   memberId!: string | null;
 
-  @Column('varchar', { name: 'recipe_id' })
+  @Index()
+  @Column('uuid', { name: 'recipe_id' })
   recipeId!: string;
 
   @Column({ type: 'date', name: 'date_repas' })

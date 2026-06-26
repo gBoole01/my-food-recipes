@@ -8,7 +8,7 @@ import { RecipeInput } from '@my-food-recipes/contracts';
 // recipe (e.g. "0.25 oignon").
 export const RECIPES_SEED: RecipeInput[] = [
   {
-    id: 'salade-grecque',
+    id: '805c71e8-4afc-4bfc-9c51-c5c5c1cfa8f9',
     name: 'Salade grecque',
     servings: 1,
     dietTags: ['vegetarien'],
@@ -35,7 +35,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'houmous-maison',
+    id: '1f1a475b-8242-4eab-ad37-8d2ef4ba7ab0',
     name: 'Houmous maison',
     servings: 1,
     dietTags: ['vegan', 'sans_gluten'],
@@ -60,7 +60,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'curry-pois-chiches',
+    id: '9a00dc3a-9fe2-4f05-90a8-213451412ba3',
     name: 'Curry de pois chiches',
     servings: 1,
     dietTags: ['vegan', 'sans_gluten'],
@@ -86,7 +86,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'ratatouille',
+    id: 'ab3459f5-20ad-40fa-8ff7-3f800aaed1ca',
     name: 'Ratatouille provençale',
     servings: 1,
     dietTags: ['vegan', 'sans_gluten'],
@@ -112,7 +112,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'risotto-champignons',
+    id: '5c533f5f-7628-4907-b3f1-52aba475db3b',
     name: 'Risotto aux champignons',
     servings: 1,
     dietTags: ['vegetarien', 'sans_gluten'],
@@ -138,7 +138,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'pates-carbonara',
+    id: 'b389c18f-1ff3-4445-8504-d41c5efc6e1b',
     name: 'Pâtes carbonara',
     servings: 1,
     dietTags: ['omnivore'],
@@ -162,7 +162,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'poulet-roti-legumes',
+    id: '80f254e4-383a-401d-a937-a34417bc8c4f',
     name: 'Poulet rôti aux légumes',
     servings: 1,
     dietTags: ['omnivore', 'sans_gluten'],
@@ -187,7 +187,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'saumon-papillote',
+    id: 'c59082f0-0e34-46d3-b309-ea391861d285',
     name: 'Saumon en papillote',
     servings: 1,
     dietTags: ['omnivore', 'pescatarien', 'sans_gluten'],
@@ -211,7 +211,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'quiche-legumes',
+    id: '4c76b8ca-1f14-49c9-9403-53cbcd906a4b',
     name: 'Quiche aux légumes',
     servings: 1,
     dietTags: ['vegetarien'],
@@ -236,7 +236,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'soupe-lentilles',
+    id: '2c7f0705-5842-4f41-b48e-efc78f3d4587',
     name: 'Soupe de lentilles',
     servings: 1,
     dietTags: ['vegan', 'sans_gluten'],
@@ -260,7 +260,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'tofu-saute-legumes',
+    id: '91070a59-4e26-451a-8e49-cd845b41ef91',
     name: 'Tofu sauté aux légumes',
     servings: 1,
     dietTags: ['vegan', 'sans_gluten'],
@@ -285,7 +285,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'tarte-aux-pommes',
+    id: '639814c9-4463-4fc3-91e8-955742b2b12f',
     name: 'Tarte aux pommes',
     servings: 1,
     dietTags: ['vegetarien'],
@@ -310,7 +310,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'smoothie-banane-epinard',
+    id: '9f4a9fb8-a40f-4535-98e7-523e1e8b4827',
     name: 'Smoothie banane-épinard',
     servings: 1,
     dietTags: ['vegan', 'sans_gluten'],
@@ -332,7 +332,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'gaspacho',
+    id: 'a58ffa0d-5074-4e9e-9da4-3d452eef0a7c',
     name: 'Gaspacho andalou',
     servings: 1,
     dietTags: ['vegan', 'sans_gluten'],
@@ -356,7 +356,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'falafels-au-four',
+    id: '362819e4-9dd4-4bb7-93f1-0fe7076ea283',
     name: 'Falafels au four',
     servings: 1,
     dietTags: ['vegan'],
@@ -381,7 +381,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'curry-legumes-coco',
+    id: '53ff06b8-7031-4159-8285-e38a82b1ed3b',
     name: 'Curry de légumes au lait de coco',
     servings: 1,
     dietTags: ['vegan', 'sans_gluten'],
@@ -406,7 +406,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'omelette-legumes',
+    id: 'dd289776-3303-4db5-b9db-0ba89baf9ea2',
     name: 'Omelette aux légumes',
     servings: 1,
     dietTags: ['vegetarien', 'sans_gluten'],
@@ -430,7 +430,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'tofu-pad-thai',
+    id: '960a91ea-cb41-43c5-a072-3604a32cdf80',
     name: 'Pad thaï au tofu',
     servings: 1,
     dietTags: ['vegan'],
@@ -456,7 +456,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'bowl-quinoa-legumes-rotis',
+    id: '0ee7f773-4b26-4ffd-a5ee-41c176f35f35',
     name: 'Bowl de quinoa et légumes rôtis',
     servings: 1,
     dietTags: ['vegan', 'sans_gluten'],
@@ -481,7 +481,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'poelee-crevettes-ail',
+    id: '505a1a3c-6a31-4bfc-b42d-611dd5363f85',
     name: "Poêlée de crevettes à l'ail",
     servings: 1,
     dietTags: ['omnivore', 'pescatarien', 'sans_gluten'],
@@ -505,7 +505,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'boeuf-bourguignon',
+    id: '73a13651-826e-46fd-988d-601f641cea04',
     name: 'Boeuf bourguignon',
     servings: 1,
     dietTags: ['omnivore', 'sans_gluten'],
@@ -530,7 +530,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'chili-sin-carne',
+    id: '2d0b8ec7-5774-419e-a210-cfc27c32d28b',
     name: 'Chili sin carne',
     servings: 1,
     dietTags: ['vegan', 'sans_gluten'],
@@ -556,7 +556,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'wrap-poulet',
+    id: 'd0111499-ef3c-46f8-a718-41c4d5f58b1d',
     name: 'Wrap au poulet',
     servings: 1,
     dietTags: ['omnivore'],
@@ -580,7 +580,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'pizza-margherita-maison',
+    id: '3e03be12-2795-47d4-ab84-33103a4b411f',
     name: 'Pizza margherita maison',
     servings: 1,
     dietTags: ['vegetarien'],
@@ -604,7 +604,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'burger-vegetarien-maison',
+    id: '13f4f8c2-2900-408c-a983-b48e5352cdce',
     name: 'Burger végétarien maison',
     servings: 1,
     dietTags: ['vegetarien'],
@@ -629,7 +629,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'soupe-miso-tofu',
+    id: '3146bfbb-32b7-4009-b955-79ffa8d0a901',
     name: 'Soupe miso au tofu',
     servings: 1,
     dietTags: ['vegan'],
@@ -653,7 +653,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'riz-saute-legumes',
+    id: '2c67b23e-7250-4795-8c3d-dfb6d3e297e6',
     name: 'Riz sauté aux légumes',
     servings: 1,
     dietTags: ['vegan', 'sans_gluten'],
@@ -678,7 +678,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'pancakes-banane',
+    id: '3c91607d-b9e6-4d32-a06a-66cb2b854784',
     name: 'Pancakes à la banane',
     servings: 1,
     dietTags: ['vegetarien'],
@@ -703,7 +703,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'granola-maison',
+    id: '1316b2b0-7622-44f7-bc5d-60c15975b1e6',
     name: 'Granola maison',
     servings: 1,
     dietTags: ['vegetarien'],
@@ -727,7 +727,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'yaourt-grec-miel-fruits',
+    id: '754c6de3-e41c-4942-9e78-2b4bc4be72a2',
     name: 'Yaourt grec au miel et fruits',
     servings: 1,
     dietTags: ['vegetarien', 'sans_gluten'],
@@ -748,7 +748,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'dahl-lentilles-corail',
+    id: 'bd02fea3-8eb4-474a-84d7-379d32c5f7ab',
     name: 'Dahl de lentilles corail',
     servings: 1,
     dietTags: ['vegan', 'sans_gluten'],
@@ -773,7 +773,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'poisson-pane-au-four',
+    id: 'bf08a7e7-afd2-465f-8455-e3be804d31f7',
     name: 'Poisson pané au four',
     servings: 1,
     dietTags: ['omnivore', 'pescatarien'],
@@ -797,7 +797,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'curry-poulet-lait-coco',
+    id: '0e0825bc-e92e-4e8a-870d-775a3bc5715e',
     name: 'Curry de poulet au lait de coco',
     servings: 1,
     dietTags: ['omnivore', 'sans_gluten', 'sans_lactose'],
@@ -823,7 +823,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'salade-quinoa-pois-chiches-avocat',
+    id: 'd3ca9ed7-91aa-4c47-88e5-2adc080b031d',
     name: 'Salade de quinoa, pois chiches et avocat',
     servings: 1,
     dietTags: ['vegan', 'sans_gluten', 'sans_lactose'],
@@ -848,7 +848,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'buddha-bowl-tofu-riz-complet',
+    id: '79202624-dd78-4f1a-86b9-3e7aaff0edd6',
     name: 'Buddha bowl tofu et riz complet',
     servings: 1,
     dietTags: ['vegan', 'sans_gluten', 'sans_lactose'],
@@ -873,7 +873,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'tartare-saumon-avocat',
+    id: '9a36a449-10be-416c-8979-9835cf179e63',
     name: "Tartare de saumon à l'avocat",
     servings: 1,
     dietTags: ['omnivore', 'pescatarien', 'sans_gluten', 'sans_lactose'],
@@ -897,7 +897,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'pancakes-vegan-banane',
+    id: '7badc0c8-8887-4da4-848e-b395ec2ae35b',
     name: 'Pancakes vegan à la banane',
     servings: 1,
     dietTags: ['vegan', 'sans_lactose'],
@@ -921,7 +921,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'curry-lentilles-epinards',
+    id: '9b1370a9-1cee-4370-a7f9-436ee8a36600',
     name: 'Curry de lentilles et épinards',
     servings: 1,
     dietTags: ['vegan', 'sans_gluten', 'sans_lactose'],
@@ -946,7 +946,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'poke-bowl-thon',
+    id: '4e39d9f1-c690-4960-87e5-b1974053ad59',
     name: 'Poke bowl au thon',
     servings: 1,
     dietTags: ['omnivore', 'pescatarien', 'sans_gluten', 'sans_lactose'],
@@ -971,7 +971,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'galettes-pois-chiches-sans-gluten',
+    id: '46bf426c-c813-40d0-9b46-4b93ea85c301',
     name: 'Galettes de pois chiches sans gluten',
     servings: 1,
     dietTags: ['vegan', 'sans_gluten', 'sans_lactose'],
@@ -996,7 +996,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'veloute-potimarron',
+    id: 'f5f448b6-db06-419b-aa95-d07fead8fe2d',
     name: 'Velouté de potimarron',
     servings: 1,
     dietTags: ['vegan', 'sans_gluten', 'sans_lactose'],
@@ -1020,7 +1020,7 @@ export const RECIPES_SEED: RecipeInput[] = [
     ],
   },
   {
-    id: 'brochettes-boeuf-marine-four',
+    id: '1289968b-cace-49d8-bcb4-6f4a120ac24b',
     name: 'Brochettes de boeuf marinées au four',
     servings: 1,
     dietTags: ['omnivore', 'sans_gluten', 'sans_lactose'],

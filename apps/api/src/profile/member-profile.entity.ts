@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { Household } from './household.entity';
 import { MemberAllergen } from './member-allergen.entity';
+import { MemberCategoryExclusion } from './member-category-exclusion.entity';
 import { MemberExcludedIngredient } from './member-excluded-ingredient.entity';
 
 export type PrimaryGoal =
@@ -106,4 +107,7 @@ export class MemberProfile {
 
   @OneToMany(() => MemberExcludedIngredient, (excluded) => excluded.member)
   excludedIngredients!: MemberExcludedIngredient[];
+
+  @OneToMany(() => MemberCategoryExclusion, (excl) => excl.member)
+  categoryExclusions!: MemberCategoryExclusion[];
 }

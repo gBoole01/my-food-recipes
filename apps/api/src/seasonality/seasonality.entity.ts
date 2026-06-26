@@ -1,4 +1,13 @@
-import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm';
+import { FoodCategory } from '../nutrition/food-category.entity';
 
 export type SeasonalityType = 'fruit' | 'legume';
 
@@ -16,4 +25,12 @@ export class Seasonality {
 
   @Column()
   name!: string;
+
+  @Index()
+  @Column({ type: 'uuid', name: 'category_id', nullable: true })
+  categoryId!: string | null;
+
+  @ManyToOne(() => FoodCategory, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'category_id' })
+  category?: FoodCategory;
 }

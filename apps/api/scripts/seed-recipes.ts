@@ -2,6 +2,9 @@ import { config } from 'dotenv';
 import { join } from 'path';
 import { DataSource, In } from 'typeorm';
 import { RecipeCorpusSchema } from '@my-food-recipes/contracts';
+import { FoodCategory } from '../src/nutrition/food-category.entity';
+import { FoodNutrition } from '../src/nutrition/food-nutrition.entity';
+import { IngredientAlias } from '../src/nutrition/ingredient-alias.entity';
 import { Recipe } from '../src/recipes/recipe.entity';
 import { RecipeIngredient } from '../src/recipes/recipe-ingredient.entity';
 import { RECIPES_SEED } from './recipes-seed.data';
@@ -34,7 +37,7 @@ async function main(): Promise<void> {
   const dataSource = new DataSource({
     type: 'postgres',
     url: process.env.DATABASE_URL,
-    entities: [Recipe, RecipeIngredient],
+    entities: [Recipe, RecipeIngredient, IngredientAlias, FoodNutrition, FoodCategory],
     synchronize: process.env.NODE_ENV !== 'production',
   });
   await dataSource.initialize();

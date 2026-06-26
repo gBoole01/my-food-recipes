@@ -1,10 +1,12 @@
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { IngredientAlias } from '../nutrition/ingredient-alias.entity';
 import { Recipe } from './recipe.entity';
 
 @Entity('recipe_ingredients')
@@ -12,7 +14,8 @@ export class RecipeIngredient {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ type: 'varchar', name: 'recipe_id' })
+  @Index()
+  @Column({ type: 'uuid', name: 'recipe_id' })
   recipeId!: string;
 
   @ManyToOne(() => Recipe, (recipe) => recipe.ingredients, {
@@ -20,6 +23,14 @@ export class RecipeIngredient {
   })
   @JoinColumn({ name: 'recipe_id' })
   recipe?: Recipe;
+
+  @Index()
+  @Column({ type: 'uuid', name: 'alias_id', nullable: true })
+  aliasId!: string | null;
+
+  @ManyToOne(() => IngredientAlias, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'alias_id' })
+  alias?: IngredientAlias;
 
   @Column('smallint')
   position!: number;

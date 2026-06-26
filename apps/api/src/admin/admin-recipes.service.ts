@@ -7,6 +7,8 @@ import type {
   AdminRecipeResponse,
   AdminRecipeUpdate,
 } from '@my-food-recipes/contracts';
+import { FoodNutrition } from '../nutrition/food-nutrition.entity';
+import { IngredientAlias } from '../nutrition/ingredient-alias.entity';
 import { Recipe } from '../recipes/recipe.entity';
 import { RecipeIngredient } from '../recipes/recipe-ingredient.entity';
 
@@ -18,6 +20,10 @@ export class AdminRecipesService {
     private readonly recipeRepository: Repository<Recipe>,
     @InjectRepository(RecipeIngredient)
     private readonly ingredientRepository: Repository<RecipeIngredient>,
+    @InjectRepository(IngredientAlias)
+    private readonly aliasRepository: Repository<IngredientAlias>,
+    @InjectRepository(FoodNutrition)
+    private readonly foodNutritionRepository: Repository<FoodNutrition>,
   ) {}
 
   async findAll(): Promise<AdminRecipeResponse[]> {
@@ -66,9 +72,15 @@ export class AdminRecipesService {
           quantity: ing.quantity / input.servingsInput,
           unit: ing.unit,
           category: ing.category,
+          aliasId: null,
         }),
       );
       await manager.save(RecipeIngredient, ingredients);
+
+      const computed = await this.recomputeMacros(ingredients);
+      if (computed) {
+        await manager.update(Recipe, { id }, computed);
+      }
 
       const saved = await manager.findOne(Recipe, {
         where: { id },
@@ -113,9 +125,15 @@ export class AdminRecipesService {
             quantity: ing.quantity / divisor,
             unit: ing.unit,
             category: ing.category,
+            aliasId: null,
           }),
         );
         await manager.save(RecipeIngredient, ingredients);
+
+        const computed = await this.recomputeMacros(ingredients);
+        if (computed) {
+          await manager.update(Recipe, { id }, computed);
+        }
       }
 
       const updated = await manager.findOne(Recipe, {
@@ -130,6 +148,47 @@ export class AdminRecipesService {
     const exists = await this.recipeRepository.existsBy({ id });
     if (!exists) throw new NotFoundException(`Recipe ${id} not found`);
     await this.recipeRepository.delete({ id });
+  }
+
+  private async recomputeMacros(
+    ingredients: RecipeIngredient[],
+  ): Promise<{ calories: number; protein: number; carbs: number; fat: number } | null> {
+    if (ingredients.some((i) => i.aliasId === null || i.unit !== 'g')) return null;
+
+    const aliasIds = ingredients.map((i) => i.aliasId as string);
+    const aliases = await this.aliasRepository.findByIds(aliasIds);
+    const nutritionIds = aliases.map((a) => a.foodNutritionId).filter((id): id is string => id !== null);
+
+    if (nutritionIds.length !== aliases.length) return null;
+
+    const nutritionRows = await this.foodNutritionRepository.findByIds(nutritionIds);
+    const nutritionById = new Map(nutritionRows.map((n) => [n.id, n]));
+    const aliasByAliasId = new Map(aliases.map((a) => [a.id, a]));
+
+    let calories = 0;
+    let protein = 0;
+    let carbs = 0;
+    let fat = 0;
+
+    for (const ing of ingredients) {
+      const alias = aliasByAliasId.get(ing.aliasId as string);
+      if (!alias?.foodNutritionId) return null;
+      const nutrition = nutritionById.get(alias.foodNutritionId);
+      if (!nutrition) return null;
+
+      const factor = ing.quantity / 100;
+      calories += (nutrition.energyKcal ?? 0) * factor;
+      protein += (nutrition.protein ?? 0) * factor;
+      carbs += (nutrition.carbohydrate ?? 0) * factor;
+      fat += (nutrition.fat ?? 0) * factor;
+    }
+
+    return {
+      calories: Math.round(calories * 10) / 10,
+      protein: Math.round(protein * 10) / 10,
+      carbs: Math.round(carbs * 10) / 10,
+      fat: Math.round(fat * 10) / 10,
+    };
   }
 }
 

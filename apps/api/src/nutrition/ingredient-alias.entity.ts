@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -15,6 +16,7 @@ export class IngredientAlias {
   @Column({ unique: true })
   alias!: string;
 
+  @Index()
   @Column({ type: 'uuid', name: 'food_nutrition_id', nullable: true })
   foodNutritionId!: string | null;
 

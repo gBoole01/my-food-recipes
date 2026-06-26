@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MemberProfile } from '../profile/member-profile.entity';
+import { FoodCategory } from './food-category.entity';
 import { FoodNutrition } from './food-nutrition.entity';
 import { IngredientAlias } from './ingredient-alias.entity';
 import { MicronutrientTarget } from './micronutrient-target.entity';
@@ -11,6 +12,7 @@ import { NutritionService } from './nutrition.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
+      FoodCategory,
       FoodNutrition,
       IngredientAlias,
       MicronutrientTarget,

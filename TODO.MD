@@ -90,6 +90,27 @@ Un système agentique interroge ensuite une base de connaissance interne (corpus
   - Un badge IMC sera également calculé pour l'utilisateur, qui sera affiché sur le profil.
   - Si l'utilisateur est une femme, il faut également savoir si elle est enceinte ou allaitante.
 
+- [x] Refine Data Model :
+  - Establish Core Relational Integrity
+   1. Link Ingredients to Nutrition Data **Action:** Update `RecipeIngredient` to include a foreign key pointing to `IngredientAlias`.
+   2. Standardize Primary Keys **Action:** Change `Recipe.id` from `varchar` to `uuid` to match every other table in your ecosystem.
+      - Normalize the `FoodNutrition` Monolith
+    [Optimized Relational Structure]
+    FoodCategories Table (Self-referencing tree)
+          ▲
+          │ (categoryId FK)
+    FoodNutrition Table (Pure nutritional values)
+   3. Extract Categories into a Hierarchical Tree **Action:** Create a self-referencing `FoodCategory` entity (holding `id`, `name`, `code`, and `parentId`). **Migration Plan:** Drop the 6 group/subgroup columns from `FoodNutrition` and replace them with a single `category_id` foreign key.
+   4. Direct Link for Seasonality  **Action:** Remove the loose `Seasonality.name` string property and replace it with a foreign key pointing directly to `FoodNutrition` (or to your new `FoodCategory`).
+
+   5. Implement Performance & Search Optimizations
+      - Indexing for Search and Filtering **Action:** Explicitly configure indexes in your TypeORM decorators:
+        - Add a **Full-Text Search (FTS) index** or Gin index on `FoodNutrition.nameFr` and `IngredientAlias.alias`.
+        - Add standard B-Tree indexes on all foreign keys (`recipe_id`, `food_nutrition_id`, `category_id`).
+
+   6. Enforce Macro-Caching Constraints **Action:** Keep the macro columns (`calories`, `protein`, `carbs`, `fat`) on the `Recipe` entity as a cached state, but implement application-level hooks (`@BeforeInsert()`, `@BeforeUpdate()`) or database triggers.
+   7. Feature Expansion (User Exclusions) **Action:** Create a polymorphic or type-safe join table mapped to `userId`. It should store an enum/type (`'ingredient' | 'category' | 'allergen'`) and a `targetValue` string (holding the respective ID or code).
+
 ### [Sprint 4] Phase 3 : Génération Batch, Substitution Ciblée & Listes
 
 - [] **EP1.12 [API Batch Generation] :** Créer l'endpoint principal `POST /api/meals/generate`. Il reçoit les métadonnées de l'agenda, applique les filtres SQL, calcule la saisonnalité glissante complexe selon la date cible du lot, et transmet le catalogue qualifié à Gemini.
