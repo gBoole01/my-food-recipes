@@ -60,10 +60,8 @@ Un système agentique interroge ensuite une base de connaissance interne (corpus
 
     - | Macronutriment | Recommandation ANSES | Règle de calcul pour l'algorithme |
       | --- | --- | --- |
-      | **Protéines** | **10% à 20%** de l'apport total
-      <br>*(ou minimum $0,83\text{g/kg/j}$ pour un adulte sain)* | **15%** est une excellente moyenne de base. Pour les sportifs (objectif 'gain'), on cible plutôt $1,5\text{g}$ à $2\text{g}$ par kg de poids. |
-      | **Lipides** | **35% à 40%** de l'apport total <br>
-      <br>*(Le gras est crucial pour le système hormonal !)* | **35%** (Ne jamais descendre sous 30%, erreur classique des anciennes apps). |
+      | **Protéines** | **10% à 20%** de l'apport total*(ou minimum $0,83\text{g/kg/j}$ pour un adulte sain)* | **15%** est une excellente moyenne de base. Pour les sportifs (objectif 'gain'), on cible plutôt $1,5\text{g}$ à $2\text{g}$ par kg de poids. |
+      | **Lipides** | **35% à 40%** de l'apport total *(Le gras est crucial pour le système hormonal !)* | **35%** (Ne jamais descendre sous 30%, erreur classique des anciennes apps). |
       | **Glucides** | **40% à 55%** de l'apport total | **Le reste des calories (ex: 50%)**. |
 
   - **Les Micronutriments (Vitamines et Minéraux) :** Ce sont des **valeurs fixes absolues** (en mg ou µg) dépendant uniquement de l'âge, du sexe et de situations spécifiques (grossesse). algorithme n'a pas besoin de faire de calcul dynamique. Tu dois intégrer en base de données une **table de constantes** basée sur le profil de l'utilisateur. **Les Micros peuvent se lisser sur la semaine :**
@@ -288,56 +286,6 @@ Pour garantir l'indépendance des développeurs frontend et backend lors des dé
 ---
 
 ## NOTES
-
-### Liste des pantries
-
-#### 1. Les Féculents & Céréales (La base texturante)
-
-- **Riz :** Blanc (basmati, jasmin), complet, arborio (pour risotto).
-- **Pâtes :** Courtes (penne, fusilli) et longues (spaghetti).
-- **Autres grains :** Semoule de blé (couscous), quinoa, boulgour, polenta, avoine (flocons).
-- **Légumes secs (Secs ou en conserve) :** Lentilles (vertes, corail), pois chiches, haricots (rouges, blancs).
-
----
-
-#### 2. Les Farines & Produits de Boulangerie
-
-- **Farines :** Farine de blé (T55, T65), farines alternatives (sarrasin, maïs, riz).
-- **Fécules :** Fécule de maïs (Maïzena) ou de pomme de terre.
-- **Boulangerie longue conservation :** Pain de mie, biscottes, tortillas de blé/maïs, chapelure.
-- **Aides à la pâtisserie :** Sucre (blanc, roux, glace), levure chimique, levure boulangère sèche, extrait de vanille, cacao en poudre.
-
----
-
-#### 3. Les Conserves, Bocaux & Liquides de cuisson
-
-- **Tomates :** Coulis, tomates concassées, concentré de tomate.
-- **Poissons en conserve :** Thon, sardines, maquereaux.
-- **Laitages ambiants :** Lait UHT, lait de coco en conserve, crèmes liquides végétales ou UHT.
-- **Bouillons :** Cubes ou poudres de bouillon (volaille, légumes, bœuf).
-
----
-
-#### 4. Les Matières Grasses, Vinaigres & Condiments Ambiants
-
-- **Huiles de cuisson & assaisonnement :** Huile d'olive, huile de tournesol ou de colza, huile de sésame.
-- **Vinaigres :** Vinaigre de vin rouge, de cidre, blanc, balsamique.
-- **Sauces & Condiments (avant ouverture) :** Sauce soja, moutarde, ketchup, mayonnaise, sauce sriracha ou pimentée.
-
----
-
-#### 5. Les Épices, Herbes Sèches & Aromates durables
-
-- **Aromates longue conservation :** Ail, oignons, échalotes (se conservent au sec et à l'ombre, hors du frigo).
-- **Épices moulues ou en grains :** Sel, poivre noir, cumin, paprika (doux, fumé), curcuma, curry, cannelle, piment de Cayenne.
-- **Herbes séchées :** Herbes de Provence, origan, thym, laurier.
-
----
-
-#### 6. Les Graines, Oléagineux & Sucres d'assaisonnement
-
-- **Fruits secs & Graines :** Noix, amandes, noisettes, graines de sésame, de courge, de chia.
-- **Produits à tartiner / Sucrants liquides :** Miel, sirop d'érable, beurre de cacahuète.
 
 ### La répartition de la charge calorique (La chrononutrition)
 

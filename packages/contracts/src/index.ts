@@ -8,3 +8,4 @@ export * from './chat.dto';
 export * from './catalog.schema';
 export * from './filter.schema';
 export * from './nutrition.schema';
+export * from './pantry-staple.schema';

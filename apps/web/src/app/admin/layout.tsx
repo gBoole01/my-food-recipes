@@ -15,6 +15,13 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             >
               Recettes
             </Link>
+            <span className="text-muted">·</span>
+            <Link
+              href="/admin/pantry-staples"
+              className="text-sm font-semibold text-primary hover:underline"
+            >
+              Fond de placard
+            </Link>
           </div>
           <Link href="/" className="text-sm text-muted hover:text-ink">
             ← Retour à l'app
