@@ -7,6 +7,7 @@ import type {
   MemberInput,
   MemberProfile,
   MemberUpdateRequest,
+  NutritionalTargets,
   PantryPatchRequest,
   RecipeFeedback,
   RecipeFeedbackRequest,
@@ -69,4 +70,8 @@ export function updateMemberEnergy(
     `/api/profile/members/${memberId}/energy`,
     input,
   );
+}
+
+export function getNutritionalTargets(memberId: string): Promise<NutritionalTargets> {
+  return getJson<NutritionalTargets>(`/api/nutrition/targets/${memberId}`);
 }

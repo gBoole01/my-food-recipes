@@ -1,10 +1,14 @@
-import { Controller, Get, Query } from '@nestjs/common';
-import type { FoodNutritionListResponse } from '@my-food-recipes/contracts';
+import { Controller, Get, Param, Query } from '@nestjs/common';
+import type { FoodNutritionListResponse, NutritionalTargets } from '@my-food-recipes/contracts';
+import { NutritionCalculatorService } from './nutrition-calculator.service';
 import { NutritionService } from './nutrition.service';
 
 @Controller('api/nutrition')
 export class NutritionController {
-  constructor(private readonly nutritionService: NutritionService) {}
+  constructor(
+    private readonly nutritionService: NutritionService,
+    private readonly nutritionCalculatorService: NutritionCalculatorService,
+  ) {}
 
   @Get()
   async findAll(
@@ -15,5 +19,12 @@ export class NutritionController {
       search,
       page: page ? Number(page) : undefined,
     });
+  }
+
+  @Get('targets/:memberId')
+  async getTargets(
+    @Param('memberId') memberId: string,
+  ): Promise<NutritionalTargets> {
+    return this.nutritionCalculatorService.getFullNutritionalTargets(memberId);
   }
 }

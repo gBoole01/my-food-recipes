@@ -52,7 +52,7 @@ Un système agentique interroge ensuite une base de connaissance interne (corpus
 
 - [x] **EP1.9 [Anti-Redondance Temporelle et Intra-Batch] :** Développer le vérificateur de variété. Il doit scanner la table `user_planning` (historique stocké par repas individuel) sur les $N$ derniers jours ($N=3$) pour interdire les recettes contenant un ingrédient principal présent plus de $X$ fois ($X=2$). *Note : L'algorithme doit aussi cumuler les ingrédients des recettes déjà acceptées en cours de génération (Cold Start).*
 
-- [] **EP1.10 [Calculateur Nutritionnel Français] :** Écrire le module de calcul nutritionnel :
+- [x] **EP1.10 [Calculateur Nutritionnel Français] :** Écrire le module de calcul nutritionnel :
   - **Les Macronutriments (Protéines, Lipides, Glucides) :** Ils sont calculés sous forme de **fourchettes de pourcentages** de l'apport énergétique total (les calories calculées précédemment), ou selon le **poids corporel**. **Les Macros se gèrent à la journée**
     - 1g de Protéines = 4 kcal
     - 1g de Glucides = 4 kcal
@@ -82,43 +82,6 @@ Un système agentique interroge ensuite une base de connaissance interne (corpus
   Le garde-fou : Ton algorithme doit veiller à ce que la somme des CG de la journée ne dépasse pas un score de 120 (CG haute), en privilégiant des repas à CG basse ($\le 10$) ou modérée ($11$ à $19$). C'est crucial pour les profils sédentaires ou en perte de poids pour éviter les fringales.
 
   - Le ratio sodium / potassium : Ajoute une contrainte où le ratio moléculaire $\text{Sodium} / \text{Potassium}$ doit rester inférieur à 1. Si une recette est riche en sodium (ex: présence de feta, de saumon fumé ou de sauce soja), l'algorithme doit obligatoirement équilibrer le reste de la journée avec des aliments très riches en potassium (avocat, épinards, banane, pommes de terre).
-
-```typescript
-export interface MacroTargets {
-  proteinGrams: number;
-  fatGrams: number;
-  carbGrams: number;
-}
-
-/**
- * Breaks down total daily calories into macronutrient grams based on ANSES guidelines.
- */
-export function calculateMacroTargets(calories: number, weightKg: number, isSportProfile: boolean): MacroTargets {
-  let proteinCalories = 0;
-  
-  if (isSportProfile) {
-    // Athletic profile: base protein on body weight (e.g., 1.6g per kg)
-    const proteinGramsTarget = weightKg * 1.6;
-    proteinCalories = proteinGramsTarget * 4;
-  } else {
-    // Standard profile: 15% of total energy
-    proteinCalories = calories * 0.15;
-  }
-
-  // Lipids: ANSES recommends 35% to 40% of total energy
-  const fatCalories = calories * 0.35;
-
-  // Carbohydrates: Takes the remaining caloric budget
-  const carbCalories = calories - (proteinCalories + fatCalories);
-
-  return {
-    proteinGrams: Math.round(proteinCalories / 4),
-    fatGrams: Math.round(fatCalories / 9),
-    carbGrams: Math.round(carbCalories / 4),
-  };
-}
-
-```
   
 - [x] **EP1.11 [Daily Kcal Calculator] :** Écrire un module de calcul du Besoin Énergétique Journalier (BEJ) d'un utilisateur.
   - Il doit collecter le sexe, l'âge, le poids et la taille de l'utilisateur pour connaitre son métabolisme.
