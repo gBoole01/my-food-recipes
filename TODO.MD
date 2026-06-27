@@ -125,11 +125,11 @@ Un système agentique interroge ensuite une base de connaissance interne (corpus
 
 *Responsable : Équipe Intégration & Client. Stack : React, Vite, Tailwind CSS, Zustand.*
 
-### [Sprint 2] Phase 1 : Wizard d'Onboarding Zéro-Chat
+### [Sprint 2] Phase 1 : Wizard d'Onboarding Chat Like
 
-- [] **EP2.1 [UI Wizard Objectifs] :** Créer l'interface de sélection des objectifs nutritionnels sous forme de tuiles graphiques cliquables et exclusives.
-- [] **EP2.2 [UI Wizard Exclusions] :** Développer l'input de recherche prédictive branché sur le dictionnaire d'ingrédients pour renseigner les allergies et exclusions absolues.
-- [] **EP2.3 [UI Wizard Équipement] :** Concevoir la matrice visuelle des appareils de cuisine avec interrupteurs dynamiques (tous cochés par défaut, l'utilisateur décoche ce qu'il n'a pas chez lui).
+- [] **EP2.1 [UI Wizard Foyer] :** Concevoir la matrice visuelle des appareils de cuisine et aliments du garde-manger avec interrupteurs dynamiques (tous cochés par défaut, l'utilisateur décoche ce qu'il n'a pas chez lui).
+- [] **EP2.2 [UI Wizard Membres] :** Créer l'interface de création des membres du foyer (sélection des objectifs nutritionnels, régimes alimentaires, allergenes, age, sexe, taille, activité physique et poids) sous forme de tuiles graphiques cliquables et exclusives.
+- [] **EP2.3 [UI Wizard Exclusions] :** Développer l'input de recherche prédictive branché sur le dictionnaire d'ingrédients pour renseigner les  exclusions absolues.
 
 ### [Sprint 3] Phase 2 : Agenda Temporel Éphémère & Remplacement Visuel
 
@@ -139,7 +139,7 @@ Un système agentique interroge ensuite une base de connaissance interne (corpus
 - Si l'application est ouverte après **21h30**, l'interface décoche la journée entière en cours et initialise le point d'entrée au lendemain matin.
 
 - [] **EP2.6 [UI Agenda Extension Séquentielle] :** Intégrer le bouton d'incrémentation `[ + Ajouter le jour suivant ]` permettant d'étendre la planification pas à pas de 1 à 7 jours complets, en affichant dynamiquement un sélecteur de couverts par créneau activé.
-- [] **EP2.7 [UI Card Preview & Actions] :** Concevoir les cartes de l'écran de prévisualisation temporaire. Afficher le badge vert **"De Saison"** calculé par le backend, les macros recalculées au nombre de couverts du repas, et le bouton **"Remplacer" (icône de régénération)**.
+- [] **EP2.7 [UI Card Preview & Actions] :** Concevoir les cartes de l'écran de prévisualisation temporaire. Afficher les macros recalculées au nombre de couverts du repas, et le bouton **"Remplacer" (icône de régénération)**.
 - [] **EP2.8 [UI State Single Loading] :** Gérer l'état de chargement asynchrone localisé à l'échelle d'une seule carte de recette lors de l'appel à `replace-single`, empêchant l'utilisateur de valider le planning global tant que la substitution est en cours.
 
 ### [Sprint 4] Phase 3 : Tableau de Bord Persistant & Listes
@@ -225,77 +225,3 @@ Ce module est conçu pour permettre à vos équipes éditoriales, diététiques 
 
 1. Alerte sur le taux de déclenchement du **Fallback (EP1.8)** (savoir combien d'utilisateurs se retrouvent avec un catalogue à zéro recette, segmenté par type d'allergie, pour savoir quelles recettes créer en priorité).
 2. Top / Flop des recettes basés sur l'accumulation des boutons `Like` / `Dislike` utilisateurs, permettant de retirer automatiquement du catalogue une recette qui ne plaît pas du tout en conditions réelles.
-
----
-
-## 📌 Matrice des Contrats d'API Clés pour l'Équipe Frontend
-
-Pour garantir l'indépendance des développeurs frontend et backend lors des développements parallèles avec Claude Code, voici la structure exacte des trois structures d'échange majeures :
-
-### 1. Payload de génération globale (`POST /api/meals/generate`)
-
-```json
-{
-  "user_id": "usr_2026_x92b",
-  "agenda_demande": [
-    { "date_repas": "2026-06-23", "creneau": "midi", "couverts": 2 },
-    { "date_repas": "2026-06-23", "creneau": "soir", "couverts": 4 },
-    { "date_repas": "2026-06-24", "creneau": "midi", "couverts": 2 }
-  ]
-}
-
-```
-
-### 2. Payload de remplacement unitaire (`POST /api/meals/replace-single`)
-
-```json
-{
-  "user_id": "usr_2026_x92b",
-  "creneau_a_remplacer": {
-    "date_repas": "2026-06-23",
-    "creneau": "soir",
-    "couverts": 4,
-    "recipe_id_rejete": "rec_chicken_curry_01"
-  },
-  "target_macros": {
-    "calories": 520,
-    "sel_g": 0.8
-  },
-  "recettes_conservees_ids": [
-    "rec_salmon_salad_09",
-    "rec_pasta_pesto_14"
-  ]
-}
-
-```
-
-### 3. Payload de sauvegarde en base de données (`POST /api/meals/save`)
-
-```json
-{
-  "user_id": "usr_2026_x92b",
-  "planning_final": [
-    { "date_repas": "2026-06-23", "creneau": "midi", "recipe_id": "rec_salmon_salad_09", "couverts": 2 },
-    { "date_repas": "2026-06-23", "creneau": "soir", "recipe_id": "rec_veggie_wok_88", "couverts": 4 },
-    { "date_repas": "2026-06-24", "creneau": "midi", "recipe_id": "rec_pasta_pesto_14", "couverts": 2 }
-  ]
-}
-
-```
-
----
-
-## NOTES
-
-### La répartition de la charge calorique (La chrononutrition)
-
-Le corps ne gère pas les nutriments de la même manière à 7h du matin et à 21h. Un énorme repas le soir perturbe le sommeil et favorise le stockage nocturne.
-
-Ton algorithme doit distribuer le budget calorique calculé selon une courbe logique sur la journée. L'ANSES recommande la répartition classique suivante :
-
-| Repas | Part du budget calorique journalier | Note diététique pour l'algo |
-| --- | --- | --- |
-| **Petit-déjeuner** | **20% à 25%** | Plutôt riche en lipides et protéines (satiété). |
-| **Déjeuner** | **35% à 40%** | Le repas pivot, équilibré (le plus complexe à gérer en restes). |
-| **Collation (Optionnelle)** | **10%** | À activer si la fenêtre entre midi et le soir dépasse 6 heures. |
-| **Dîner** | **25% à 30%** | Plus léger, pauvre en acides gras saturés pour préserver le sommeil. |

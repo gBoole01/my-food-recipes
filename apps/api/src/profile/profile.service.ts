@@ -20,7 +20,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, Repository } from 'typeorm';
-import { GlobalPantryStaple } from '../admin/global-pantry-staple.entity';
+import { IngredientAlias } from '../nutrition/ingredient-alias.entity';
 import { Recipe } from '../recipes/recipe.entity';
 import {
   BmiCategory,
@@ -51,15 +51,16 @@ export class ProfileService {
     private readonly recipeRepository: Repository<Recipe>,
     @InjectRepository(RecipeFeedback)
     private readonly recipeFeedbackRepository: Repository<RecipeFeedback>,
-    @InjectRepository(GlobalPantryStaple)
-    private readonly globalPantryStapleRepository: Repository<GlobalPantryStaple>,
+    @InjectRepository(IngredientAlias)
+    private readonly ingredientAliasRepository: Repository<IngredientAlias>,
   ) {}
 
   async getGlobalPantryStaples(): Promise<GlobalPantryStapleDto[]> {
-    const rows = await this.globalPantryStapleRepository.find({
-      order: { name: 'ASC' },
+    const rows = await this.ingredientAliasRepository.find({
+      where: { isPantryStaple: true },
+      order: { alias: 'ASC' },
     });
-    return rows.map((r) => ({ id: r.id, name: r.name }));
+    return rows.map((r) => ({ id: r.id, name: r.alias }));
   }
 
   async registerHousehold(

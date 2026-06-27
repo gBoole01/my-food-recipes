@@ -6,6 +6,8 @@ import type {
   AdminRecipeCreate,
   AdminRecipeResponse,
   AdminRecipeUpdate,
+  IngredientAliasListResponse,
+  IngredientAliasSuggestion,
 } from '@my-food-recipes/contracts';
 import { FoodNutrition } from '../nutrition/food-nutrition.entity';
 import { IngredientAlias } from '../nutrition/ingredient-alias.entity';
@@ -72,7 +74,7 @@ export class AdminRecipesService {
           quantity: ing.quantity / input.servingsInput,
           unit: ing.unit,
           category: ing.category,
-          aliasId: null,
+          aliasId: ing.aliasId ?? null,
         }),
       );
       await manager.save(RecipeIngredient, ingredients);
@@ -125,7 +127,7 @@ export class AdminRecipesService {
             quantity: ing.quantity / divisor,
             unit: ing.unit,
             category: ing.category,
-            aliasId: null,
+            aliasId: ing.aliasId ?? null,
           }),
         );
         await manager.save(RecipeIngredient, ingredients);
@@ -142,6 +144,66 @@ export class AdminRecipesService {
       });
       return toAdminResponse(updated!);
     });
+  }
+
+  private static readonly ALIAS_PAGE_SIZE = 30;
+
+  async listAliases(params: {
+    search?: string;
+    page?: number;
+  }): Promise<IngredientAliasListResponse> {
+    const page = params.page && params.page > 0 ? params.page : 1;
+    const qb = this.aliasRepository
+      .createQueryBuilder('a')
+      .leftJoinAndSelect('a.foodNutrition', 'fn')
+      .leftJoinAndSelect('fn.category', 'cat')
+      .orderBy('a.alias', 'ASC')
+      .skip((page - 1) * AdminRecipesService.ALIAS_PAGE_SIZE)
+      .take(AdminRecipesService.ALIAS_PAGE_SIZE);
+
+    if (params.search?.trim()) {
+      qb.where('a.alias ILIKE :search', { search: `%${params.search.trim()}%` });
+    }
+
+    const [aliases, total] = await qb.getManyAndCount();
+
+    return {
+      items: aliases.map((a) => ({
+        id: a.id,
+        alias: a.alias,
+        isPantryStaple: a.isPantryStaple,
+        seasonalType: a.seasonalType,
+        seasonalMonths: a.seasonalMonths,
+        foodNutritionId: a.foodNutritionId,
+        foodNutritionName: a.foodNutrition?.nameFr ?? null,
+        categoryName: a.foodNutrition?.category?.name ?? null,
+      })),
+      total,
+      page,
+      pageSize: AdminRecipesService.ALIAS_PAGE_SIZE,
+    };
+  }
+
+  async searchAliases(search: string): Promise<IngredientAliasSuggestion[]> {
+    const aliases = await this.aliasRepository
+      .createQueryBuilder('a')
+      .leftJoinAndSelect('a.foodNutrition', 'fn')
+      .leftJoinAndSelect('fn.category', 'cat')
+      .where('a.alias ILIKE :search', { search: `%${search}%` })
+      .orderBy('a.alias', 'ASC')
+      .take(20)
+      .getMany();
+
+    return aliases.map((a) => ({
+      id: a.id,
+      alias: a.alias,
+      isPantryStaple: a.isPantryStaple,
+      seasonalType: a.seasonalType,
+      seasonalMonths: a.seasonalMonths,
+      foodNutritionId: a.foodNutritionId,
+      foodNutritionName: a.foodNutrition?.nameFr ?? null,
+      categoryName: a.foodNutrition?.category?.name ?? null,
+    }));
   }
 
   async remove(id: string): Promise<void> {
@@ -212,6 +274,7 @@ function toAdminResponse(entity: Recipe): AdminRecipeResponse {
       .sort((a, b) => a.position - b.position)
       .map((ing) => ({
         name: ing.name,
+        aliasId: ing.aliasId,
         quantity: ing.quantity,
         unit: ing.unit,
         category: ing.category,

@@ -24,6 +24,15 @@ export class IngredientAlias {
   @JoinColumn({ name: 'food_nutrition_id' })
   foodNutrition?: FoodNutrition;
 
+  @Column({ type: 'boolean', name: 'is_pantry_staple', default: false })
+  isPantryStaple!: boolean;
+
+  @Column({ type: 'varchar', length: 10, name: 'seasonal_type', nullable: true })
+  seasonalType!: 'fruit' | 'legume' | null;
+
+  @Column({ type: 'int', name: 'seasonal_months', array: true, nullable: true })
+  seasonalMonths!: number[] | null;
+
   @Column({ type: 'varchar', nullable: true })
   notes!: string | null;
 }

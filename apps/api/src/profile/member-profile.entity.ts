@@ -13,11 +13,7 @@ import { MemberAllergen } from './member-allergen.entity';
 import { MemberCategoryExclusion } from './member-category-exclusion.entity';
 import { MemberExcludedIngredient } from './member-excluded-ingredient.entity';
 
-export type PrimaryGoal =
-  | 'perte_de_poids'
-  | 'stabilisation'
-  | 'prise_de_masse'
-  | 'sante_cardio';
+export type PrimaryGoal = 'perte_de_poids' | 'stabilisation' | 'prise_de_masse';
 
 export type Diet =
   | 'omnivore'
@@ -34,8 +30,7 @@ export type SecondaryDiet =
   | 'pauvre_fibres'
   | 'cetogene'
   | 'low_carb'
-  | 'paleo'
-  | 'sans_gluten';
+  | 'paleo';
 
 @Entity('member_profiles')
 export class MemberProfile {

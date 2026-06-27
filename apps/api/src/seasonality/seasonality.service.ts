@@ -1,15 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import type { SeasonalityItem } from '@my-food-recipes/contracts';
-import { Seasonality, SeasonalityType } from './seasonality.entity';
+import { IngredientAlias } from '../nutrition/ingredient-alias.entity';
+import { SeasonalityType } from './seasonality.entity';
 import { computeSeasonalityWindow } from './seasonality-window';
 
 @Injectable()
 export class SeasonalityService {
   constructor(
-    @InjectRepository(Seasonality)
-    private readonly seasonalityRepository: Repository<Seasonality>,
+    @InjectRepository(IngredientAlias)
+    private readonly aliasRepository: Repository<IngredientAlias>,
   ) {}
 
   async getSeasonalNames(
@@ -20,28 +21,30 @@ export class SeasonalityService {
       slotDate.getMonth() + 1,
       batchStartDate.getMonth() + 1,
     );
-    const rows = await this.seasonalityRepository.find({
-      where: { month: In(window) },
-    });
-    return [...new Set(rows.map((row) => row.name))];
+    const rows = await this.aliasRepository
+      .createQueryBuilder('a')
+      .select('a.alias')
+      .where('a.seasonal_months && :months', { months: window })
+      .getMany();
+    return [...new Set(rows.map((r) => r.alias))];
   }
 
   async findAllGrouped(type?: SeasonalityType): Promise<SeasonalityItem[]> {
-    const rows = await this.seasonalityRepository.find({
-      where: type ? { type } : {},
-      order: { name: 'ASC', month: 'ASC' },
-    });
+    const qb = this.aliasRepository
+      .createQueryBuilder('a')
+      .where('a.seasonal_months IS NOT NULL')
+      .orderBy('a.alias', 'ASC');
 
-    const byKey = new Map<string, SeasonalityItem>();
-    for (const row of rows) {
-      const key = `${row.type}:${row.name}`;
-      const existing = byKey.get(key);
-      if (existing) {
-        existing.months.push(row.month);
-      } else {
-        byKey.set(key, { name: row.name, type: row.type, months: [row.month] });
-      }
+    if (type) {
+      qb.andWhere('a.seasonal_type = :type', { type });
     }
-    return [...byKey.values()];
+
+    const rows = await qb.getMany();
+
+    return rows.map((r) => ({
+      name: r.alias,
+      type: r.seasonalType as SeasonalityType,
+      months: r.seasonalMonths ?? [],
+    }));
   }
 }

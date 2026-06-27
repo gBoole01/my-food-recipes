@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -25,6 +26,11 @@ export class AdminRecipesController {
   @Get()
   findAll() {
     return this.adminRecipesService.findAll();
+  }
+
+  @Get('ingredient-aliases')
+  searchAliases(@Query('search') search?: string) {
+    return this.adminRecipesService.searchAliases(search ?? '');
   }
 
   @Get(':id')

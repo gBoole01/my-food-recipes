@@ -22,6 +22,13 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             >
               Fond de placard
             </Link>
+            <span className="text-muted">·</span>
+            <Link
+              href="/admin/ingredients"
+              className="text-sm font-semibold text-primary hover:underline"
+            >
+              Ingrédients
+            </Link>
           </div>
           <Link href="/" className="text-sm text-muted hover:text-ink">
             ← Retour à l'app

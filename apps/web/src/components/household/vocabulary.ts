@@ -8,6 +8,9 @@ export const EQUIPMENT_OPTIONS = [
   { value: "micro_ondes", label: "Four à micro-ondes" },
   { value: "airfryer", label: "Airfryer" },
   { value: "cuiseur_vapeur", label: "Cuiseur vapeur" },
+  { value: "autocuiseur", label: "Autocuiseur" },
+  { value: "blender", label: "Blender/Mixeur" },
+  { value: "robot", label: "Robot culinaire" },
   { value: "grille_pain", label: "Grille-pain" },
 ];
 
@@ -15,10 +18,10 @@ export const ALLERGEN_OPTIONS = [
   { value: "gluten", label: "Gluten" },
   { value: "crustaces", label: "Crustacés" },
   { value: "oeufs", label: "Œufs" },
-  { value: "poissons", label: "Poissons" },
+  { value: "poisson", label: "Poisson" },
   { value: "arachides", label: "Arachides" },
   { value: "soja", label: "Soja" },
-  { value: "lait", label: "Lait" },
+  { value: "lactose", label: "Lactose" },
   { value: "fruits_a_coque", label: "Fruits à coque" },
   { value: "celeri", label: "Céleri" },
   { value: "moutarde", label: "Moutarde" },
@@ -32,7 +35,6 @@ export const PRIMARY_GOAL_OPTIONS = [
   { value: "perte_de_poids", label: "Perte de poids" },
   { value: "stabilisation", label: "Stabilisation" },
   { value: "prise_de_masse", label: "Prise de masse" },
-  { value: "sante_cardio", label: "Santé cardio" },
 ] as const;
 
 export const DIET_OPTIONS = [
@@ -52,5 +54,4 @@ export const SECONDARY_DIET_OPTIONS = [
   { value: "cetogene", label: "Cétogène" },
   { value: "low_carb", label: "Low Carb" },
   { value: "paleo", label: "Paléo" },
-  { value: "sans_gluten", label: "Sans gluten" },
 ] as const;

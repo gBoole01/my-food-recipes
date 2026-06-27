@@ -1,9 +1,3 @@
-export interface IngredientAliasMappingEntry {
-  alias: string;
-  alimCode: string | null;
-  notes?: string;
-}
-
 const NO_RAW_FORM =
   'Forme crue/brute absente de CIQUAL pour cet aliment précis ; valeur basée sur la forme cuite la plus neutre disponible.';
 const VARIETY_NOT_DISTINGUISHED =
@@ -13,8 +7,405 @@ const NOT_IN_CIQUAL =
 const COMPOSITE_NO_MATCH =
   'Produit composite/transformé sans équivalent fiable à 1 entrée dans CIQUAL — nécessite une décomposition en ingrédients de base (ticket futur).';
 
-export const INGREDIENT_ALIAS_MAPPING: IngredientAliasMappingEntry[] = [
-  { alias: 'ail', alimCode: '11000' },
+export interface IngredientAliasSeedEntry {
+  alias: string;
+  alimCode?: string | null;
+  isPantryStaple?: boolean;
+  notes?: string;
+}
+
+// Source : ADEME, infographie "À chaque mois ses fruits et légumes" (apps/api/seeds/Fruits et légumes mensuels.pdf).
+// Noms normalisés (minuscules, sans accents, singulier) pour rester cohérents avec les alias recettes.
+export const MONTHS: { month: number; legumes: string[]; fruits: string[] }[] =
+  [
+    {
+      month: 1,
+      legumes: [
+        'betterave',
+        'carotte',
+        'celeri',
+        'champignon de paris',
+        'chou',
+        'chou de bruxelles',
+        'chou-fleur',
+        'courge',
+        'cresson',
+        'endive',
+        'epinard',
+        'mache',
+        'navet',
+        'oignon',
+        'panais',
+        'poireau',
+        'potiron',
+        'salsifis',
+        'topinambour',
+      ],
+      fruits: [
+        'citron',
+        'clementine',
+        'kaki',
+        'kiwi',
+        'mandarine',
+        'orange',
+        'poire',
+        'pomme',
+      ],
+    },
+    {
+      month: 2,
+      legumes: [
+        'betterave',
+        'carotte',
+        'celeri',
+        'champignon de paris',
+        'chou',
+        'chou de bruxelles',
+        'chou-fleur',
+        'cresson',
+        'endive',
+        'epinard',
+        'mache',
+        'navet',
+        'oignon',
+        'panais',
+        'poireau',
+        'salsifis',
+        'topinambour',
+      ],
+      fruits: [
+        'citron',
+        'clementine',
+        'kiwi',
+        'mandarine',
+        'orange',
+        'pamplemousse',
+        'poire',
+        'pomme',
+      ],
+    },
+    {
+      month: 3,
+      legumes: [
+        'betterave',
+        'carotte',
+        'celeri',
+        'champignon de paris',
+        'chou',
+        'chou de bruxelles',
+        'chou-fleur',
+        'cresson',
+        'endive',
+        'epinard',
+        'navet',
+        'oignon',
+        'panais',
+        'poireau',
+        'radis',
+      ],
+      fruits: ['kiwi', 'orange', 'pamplemousse', 'poire', 'pomme'],
+    },
+    {
+      month: 4,
+      legumes: [
+        'asperge',
+        'betterave',
+        'champignon de paris',
+        'cresson',
+        'endive',
+        'epinard',
+        'fenouil',
+        'navet',
+        'oignon',
+        'poireau',
+        'radis',
+        'salade',
+      ],
+      fruits: ['pamplemousse', 'pomme', 'rhubarbe'],
+    },
+    {
+      month: 5,
+      legumes: [
+        'artichaut',
+        'asperge',
+        'champignon de paris',
+        'concombre',
+        'courgette',
+        'cresson',
+        'epinard',
+        'navet',
+        'petit pois',
+        'radis',
+        'salade',
+      ],
+      fruits: ['fraise', 'pamplemousse', 'rhubarbe'],
+    },
+    {
+      month: 6,
+      legumes: [
+        'artichaut',
+        'asperge',
+        'aubergine',
+        'blette',
+        'champignon de paris',
+        'concombre',
+        'courgette',
+        'fenouil',
+        'haricot vert',
+        'petit pois',
+        'poivron',
+        'radis',
+        'tomate',
+        'salade',
+      ],
+      fruits: [
+        'abricot',
+        'cassis',
+        'cerise',
+        'fraise',
+        'framboise',
+        'groseille',
+        'melon',
+        'pamplemousse',
+        'pasteque',
+        'peche',
+        'rhubarbe',
+      ],
+    },
+    {
+      month: 7,
+      legumes: [
+        'ail',
+        'artichaut',
+        'aubergine',
+        'blette',
+        'champignon de paris',
+        'concombre',
+        'courgette',
+        'fenouil',
+        'haricot vert',
+        'mais',
+        'petit pois',
+        'poivron',
+        'radis',
+        'tomate',
+        'salade',
+      ],
+      fruits: [
+        'abricot',
+        'cassis',
+        'cerise',
+        'figue',
+        'fraise',
+        'framboise',
+        'groseille',
+        'melon',
+        'myrtille',
+        'nectarine',
+        'pasteque',
+        'peche',
+        'prune',
+      ],
+    },
+    {
+      month: 8,
+      legumes: [
+        'ail',
+        'artichaut',
+        'aubergine',
+        'blette',
+        'champignon de paris',
+        'concombre',
+        'courgette',
+        'fenouil',
+        'haricot vert',
+        'mais',
+        'poivron',
+        'tomate',
+        'salade',
+      ],
+      fruits: [
+        'abricot',
+        'cassis',
+        'figue',
+        'framboise',
+        'groseille',
+        'melon',
+        'mirabelle',
+        'mure',
+        'myrtille',
+        'nectarine',
+        'pasteque',
+        'peche',
+        'poire',
+        'pomme',
+        'prune',
+      ],
+    },
+    {
+      month: 9,
+      legumes: [
+        'ail',
+        'artichaut',
+        'aubergine',
+        'blette',
+        'brocoli',
+        'carotte',
+        'chou-fleur',
+        'champignon de paris',
+        'concombre',
+        'courge',
+        'courgette',
+        'cresson',
+        'epinard',
+        'fenouil',
+        'haricot vert',
+        'mais',
+        'oignon',
+        'poireau',
+        'poivron',
+        'potiron',
+        'tomate',
+        'salade',
+      ],
+      fruits: [
+        'figue',
+        'melon',
+        'mirabelle',
+        'mure',
+        'myrtille',
+        'noisette',
+        'noix',
+        'pasteque',
+        'peche',
+        'poire',
+        'pomme',
+        'prune',
+        'raisin',
+      ],
+    },
+    {
+      month: 10,
+      legumes: [
+        'ail',
+        'betterave',
+        'blette',
+        'brocoli',
+        'carotte',
+        'celeri',
+        'champignon de paris',
+        'chou',
+        'chou de bruxelles',
+        'chou-fleur',
+        'concombre',
+        'courge',
+        'courgette',
+        'cresson',
+        'echalote',
+        'endive',
+        'epinard',
+        'fenouil',
+        'haricot vert',
+        'mache',
+        'navet',
+        'oignon',
+        'panais',
+        'poireau',
+        'potiron',
+        'salade',
+      ],
+      fruits: [
+        'chataigne',
+        'coing',
+        'figue',
+        'kaki',
+        'noisette',
+        'noix',
+        'poire',
+        'pomme',
+        'raisin',
+      ],
+    },
+    {
+      month: 11,
+      legumes: [
+        'ail',
+        'betterave',
+        'brocoli',
+        'carotte',
+        'celeri',
+        'champignon de paris',
+        'chou',
+        'chou de bruxelles',
+        'chou-fleur',
+        'courge',
+        'cresson',
+        'echalote',
+        'endive',
+        'epinard',
+        'fenouil',
+        'mache',
+        'navet',
+        'oignon',
+        'panais',
+        'poireau',
+        'potiron',
+        'salsifis',
+        'topinambour',
+      ],
+      fruits: [
+        'chataigne',
+        'citron',
+        'clementine',
+        'kaki',
+        'kiwi',
+        'mandarine',
+        'noisette',
+        'poire',
+        'pomme',
+      ],
+    },
+    {
+      month: 12,
+      legumes: [
+        'ail',
+        'betterave',
+        'carotte',
+        'celeri',
+        'champignon de paris',
+        'chou',
+        'chou de bruxelles',
+        'chou-fleur',
+        'courge',
+        'cresson',
+        'echalote',
+        'endive',
+        'epinard',
+        'mache',
+        'navet',
+        'oignon',
+        'panais',
+        'poireau',
+        'potiron',
+        'salsifis',
+        'topinambour',
+      ],
+      fruits: [
+        'citron',
+        'clementine',
+        'kaki',
+        'kiwi',
+        'mandarine',
+        'orange',
+        'poire',
+        'pomme',
+      ],
+    },
+  ];
+
+export const INGREDIENT_ALIAS_SEED: IngredientAliasSeedEntry[] = [
+  // === Ingrédients du corpus de recettes — mappés vers CIQUAL ===
+  { alias: 'ail', alimCode: '11000', isPantryStaple: true },
   {
     alias: 'algues wakame',
     alimCode: '20999',
@@ -43,7 +434,12 @@ export const INGREDIENT_ALIAS_MAPPING: IngredientAliasMappingEntry[] = [
     alimCode: '6231',
     notes: 'Correspond à "Boeuf, à bourguignon ou pot-au-feu, cru".',
   },
-  { alias: 'bouillon de legumes', alimCode: '11041' },
+  {
+    alias: 'bouillon de legumes',
+    alimCode: '11041',
+    isPantryStaple: true,
+    notes: 'Correspond à "Bouillon de légumes, déshydraté".',
+  },
   {
     alias: 'bouquet garni',
     alimCode: null,
@@ -58,10 +454,10 @@ export const INGREDIENT_ALIAS_MAPPING: IngredientAliasMappingEntry[] = [
       VARIETY_NOT_DISTINGUISHED +
       ' "Cacahuète, grillée, sans sel ajouté" retenue (forme concassée non isolée).',
   },
-  { alias: 'cannelle', alimCode: '11025' },
+  { alias: 'cannelle', alimCode: '11025', isPantryStaple: true },
   { alias: 'carotte', alimCode: '20009' },
   { alias: 'champignons de paris', alimCode: '20056' },
-  { alias: 'chapelure', alimCode: '7500' },
+  { alias: 'chapelure', alimCode: '7500', isPantryStaple: true },
   { alias: 'cheddar', alimCode: '12726' },
   { alias: 'citron', alimCode: '13009' },
   {
@@ -110,6 +506,7 @@ export const INGREDIENT_ALIAS_MAPPING: IngredientAliasMappingEntry[] = [
   {
     alias: 'farine de ble',
     alimCode: '9436',
+    isPantryStaple: true,
     notes:
       'Correspond à "Farine de blé tendre ou froment T55 (pour pains)", la plus courante en cuisine.',
   },
@@ -125,11 +522,7 @@ export const INGREDIENT_ALIAS_MAPPING: IngredientAliasMappingEntry[] = [
     notes:
       'CIQUAL distingue désormais le cru ; "Cabillaud, cru" retenue (amélioration vs CORGIS).',
   },
-  {
-    alias: "flocons d'avoine",
-    alimCode: '32140',
-    notes: 'Correspond à "Flocons d\'avoine" (forme crue, non cuits).',
-  },
+  { alias: "flocons d'avoine", alimCode: '32140', isPantryStaple: true },
   {
     alias: 'fromage rape',
     alimCode: '12775',
@@ -163,12 +556,14 @@ export const INGREDIENT_ALIAS_MAPPING: IngredientAliasMappingEntry[] = [
   {
     alias: 'herbes de provence',
     alimCode: '11060',
+    isPantryStaple: true,
     notes:
       'CIQUAL a une entrée directe : "Herbes de Provence, séchées" (amélioration vs CORGIS qui n\'avait pas ce mélange).',
   },
   {
     alias: "huile d'olive",
     alimCode: '17270',
+    isPantryStaple: true,
     notes:
       VARIETY_NOT_DISTINGUISHED +
       ' "Huile d\'olive vierge extra" retenue (seule entrée disponible).',
@@ -191,7 +586,7 @@ export const INGREDIENT_ALIAS_MAPPING: IngredientAliasMappingEntry[] = [
     notes:
       'Correspond à "Boisson à l\'amande, nature, sans sucres ajoutés, non enrichie, préemballée".',
   },
-  { alias: 'lait de coco', alimCode: '18041' },
+  { alias: 'lait de coco', alimCode: '18041', isPantryStaple: true },
   {
     alias: 'lardons',
     alimCode: '28501',
@@ -200,18 +595,21 @@ export const INGREDIENT_ALIAS_MAPPING: IngredientAliasMappingEntry[] = [
   {
     alias: 'lentilles corail',
     alimCode: '20589',
+    isPantryStaple: true,
     notes:
       'CIQUAL distingue désormais corail/verte ; "Lentille corail, bouillie/cuite à l\'eau" retenue (amélioration vs CORGIS).',
   },
   {
     alias: 'lentilles vertes',
     alimCode: '20587',
+    isPantryStaple: true,
     notes:
       'CIQUAL distingue désormais corail/verte ; "Lentille verte, bouillie/cuite à l\'eau" retenue (amélioration vs CORGIS).',
   },
   {
     alias: 'levure chimique',
     alimCode: '11046',
+    isPantryStaple: true,
     notes: 'Correspond à "Levure chimique ou poudre à lever".',
   },
   {
@@ -220,7 +618,7 @@ export const INGREDIENT_ALIAS_MAPPING: IngredientAliasMappingEntry[] = [
     notes:
       'Correspond à "Maïs doux, appertisé, égoutté" (usage courant en boîte).',
   },
-  { alias: 'miel', alimCode: '31008' },
+  { alias: 'miel', alimCode: '31008', isPantryStaple: true },
   {
     alias: 'mozzarella',
     alimCode: '19590',
@@ -238,7 +636,12 @@ export const INGREDIENT_ALIAS_MAPPING: IngredientAliasMappingEntry[] = [
     notes: 'Correspond à "Vermicelles de riz sèches, crues".',
   },
   { alias: 'oeuf', alimCode: '22000', notes: 'Correspond à "Oeuf cru".' },
-  { alias: 'oignon', alimCode: '20034', notes: 'Correspond à "Oignon, cru".' },
+  {
+    alias: 'oignon',
+    alimCode: '20034',
+    isPantryStaple: true,
+    notes: 'Correspond à "Oignon, cru".',
+  },
   {
     alias: 'oignon nouveau',
     alimCode: '20323',
@@ -341,6 +744,7 @@ export const INGREDIENT_ALIAS_MAPPING: IngredientAliasMappingEntry[] = [
   {
     alias: 'poivre noir',
     alimCode: '11015',
+    isPantryStaple: true,
     notes: 'Correspond à "Poivre noir, poudre".',
   },
   {
@@ -383,7 +787,12 @@ export const INGREDIENT_ALIAS_MAPPING: IngredientAliasMappingEntry[] = [
     notes:
       'Correspond à "Graine germée de haricot mungo ou pousse de \'soja\', crue".',
   },
-  { alias: 'quinoa', alimCode: '9341', notes: 'Cuit, sans sel ajouté.' },
+  {
+    alias: 'quinoa',
+    alimCode: '9341',
+    isPantryStaple: true,
+    notes: 'Cuit, sans sel ajouté.',
+  },
   {
     alias: 'riz arborio',
     alimCode: '9104',
@@ -411,6 +820,7 @@ export const INGREDIENT_ALIAS_MAPPING: IngredientAliasMappingEntry[] = [
   {
     alias: 'sauce soja',
     alimCode: '11104',
+    isPantryStaple: true,
     notes: 'Correspond à "Sauce soja, préemballée".',
   },
   {
@@ -430,13 +840,23 @@ export const INGREDIENT_ALIAS_MAPPING: IngredientAliasMappingEntry[] = [
     notes:
       'Correspond à "Pâtes sèches, standard, cuites, sans sel ajouté" (forme spécifique spaghetti non distinguée).',
   },
-  { alias: 'sucre', alimCode: '31016', notes: 'Correspond à "Sucre blanc".' },
+  {
+    alias: 'sucre',
+    alimCode: '31016',
+    isPantryStaple: true,
+    notes: 'Correspond à "Sucre blanc".',
+  },
   {
     alias: 'tahini',
     alimCode: '15203',
     notes: 'Correspond à "Tahin ou purée de sésame".',
   },
-  { alias: 'thym', alimCode: '11038', notes: 'Correspond à "Thym, séché".' },
+  {
+    alias: 'thym',
+    alimCode: '11038',
+    isPantryStaple: true,
+    notes: 'Correspond à "Thym, séché".',
+  },
   {
     alias: 'tofu ferme',
     alimCode: '20904',
@@ -457,6 +877,7 @@ export const INGREDIENT_ALIAS_MAPPING: IngredientAliasMappingEntry[] = [
   {
     alias: 'tomate concassee',
     alimCode: '20169',
+    isPantryStaple: true,
     notes: 'Correspond à "Tomate, chair, appertisée".',
   },
   {
@@ -481,5 +902,168 @@ export const INGREDIENT_ALIAS_MAPPING: IngredientAliasMappingEntry[] = [
     alias: 'yaourt grec',
     alimCode: '19860',
     notes: 'Correspond à "Yaourt à la grecque nature".',
+  },
+
+  // === Ingrédients de fond de placard — non présents dans les recettes ===
+
+  // Féculents & Céréales
+  { alias: 'riz blanc', alimCode: '9100', isPantryStaple: true },
+  { alias: 'riz complet', alimCode: '9102', isPantryStaple: true },
+  {
+    alias: 'pates courtes',
+    alimCode: '9810',
+    isPantryStaple: true,
+    notes:
+      VARIETY_NOT_DISTINGUISHED + ' "Pâtes sèches, standard, crues" retenues.',
+  },
+  {
+    alias: 'pates longues',
+    alimCode: '9810',
+    isPantryStaple: true,
+    notes:
+      VARIETY_NOT_DISTINGUISHED + ' "Pâtes sèches, standard, crues" retenues.',
+  },
+  {
+    alias: 'semoule de ble',
+    alimCode: '9610',
+    isPantryStaple: true,
+    notes: 'Correspond à "Semoule de blé dur, crue".',
+  },
+  {
+    alias: 'boulgour',
+    alimCode: '9690',
+    isPantryStaple: true,
+    notes: 'Correspond à "Boulgour de blé, cru".',
+  },
+  {
+    alias: 'polenta',
+    alimCode: '9614',
+    isPantryStaple: true,
+    notes: 'Correspond à "Polenta ou semoule de maïs, précuite, à cuire".',
+  },
+  {
+    alias: 'pois chiches',
+    alimCode: '20516',
+    isPantryStaple: true,
+    notes: 'Correspond à "Pois chiche, sec".',
+  },
+  {
+    alias: 'haricots rouges',
+    alimCode: '20525',
+    isPantryStaple: true,
+    notes: 'Correspond à "Haricot rouge, sec".',
+  },
+  {
+    alias: 'haricots blancs',
+    alimCode: '20501',
+    isPantryStaple: true,
+    notes: 'Correspond à "Haricot blanc, sec".',
+  },
+  {
+    alias: 'fecule de mais',
+    alimCode: '9510',
+    isPantryStaple: true,
+    notes: 'Correspond à "Amidon de maïs ou fécule de maïs".',
+  },
+
+  // Conserves & Liquides de cuisson
+  {
+    alias: 'coulis de tomates',
+    alimCode: '20260',
+    isPantryStaple: true,
+    notes: 'Correspond à "Tomate, coulis, appertisé".',
+  },
+  {
+    alias: 'concentre de tomate',
+    alimCode: '20068',
+    isPantryStaple: true,
+    notes: 'Correspond à "Tomate, concentré, appertisé".',
+  },
+  {
+    alias: 'thon en conserve',
+    alimCode: '26039',
+    isPantryStaple: true,
+    notes: 'Correspond à "Thon, au naturel, appertisé, égoutté".',
+  },
+  {
+    alias: 'lait uht',
+    alimCode: '19039',
+    isPantryStaple: true,
+    notes:
+      'Correspond à "Lait, sans précision sur la teneur en matière grasse, UHT".',
+  },
+  {
+    alias: 'bouillon de volaille',
+    alimCode: '11174',
+    isPantryStaple: true,
+    notes: 'Correspond à "Bouillon de volaille, déshydraté".',
+  },
+
+  // Matières Grasses & Condiments
+  { alias: 'huile de tournesol', alimCode: '17440', isPantryStaple: true },
+  { alias: 'huile de colza', alimCode: '17130', isPantryStaple: true },
+  {
+    alias: 'vinaigre de vin rouge',
+    alimCode: '11220',
+    isPantryStaple: true,
+    notes: 'Correspond à "Vinaigre de vin rouge".',
+  },
+  { alias: 'vinaigre de cidre', alimCode: '11090', isPantryStaple: true },
+  { alias: 'moutarde', alimCode: '11013', isPantryStaple: true },
+
+  // Épices & Aromates
+  {
+    alias: 'sel',
+    alimCode: '11017',
+    isPantryStaple: true,
+    notes: 'Correspond à "Sel blanc alimentaire, non iodé, non fluoré".',
+  },
+  {
+    alias: 'cumin',
+    alimCode: '11042',
+    isPantryStaple: true,
+    notes:
+      VARIETY_NOT_DISTINGUISHED +
+      ' Seule la forme "graine" existe ; pas d\'entrée "poudre" séparée.',
+  },
+  {
+    alias: 'paprika doux',
+    alimCode: '11049',
+    isPantryStaple: true,
+    notes:
+      VARIETY_NOT_DISTINGUISHED +
+      ' "Paprika, poudre" retenue (variante douce non isolée).',
+  },
+  {
+    alias: 'curcuma',
+    alimCode: '11089',
+    isPantryStaple: true,
+    notes: 'Correspond à "Curcuma, poudre".',
+  },
+  {
+    alias: 'curry',
+    alimCode: '11005',
+    isPantryStaple: true,
+    notes: 'Correspond à "Curry, poudre".',
+  },
+  {
+    alias: 'piment de cayenne',
+    alimCode: '11088',
+    isPantryStaple: true,
+    notes: 'Correspond à "Poivre de Cayenne ou piment de Cayenne, poudre".',
+  },
+  {
+    alias: 'origan',
+    alimCode: '11035',
+    isPantryStaple: true,
+    notes: 'Correspond à "Origan, séché".',
+  },
+
+  // Graines & Oléagineux
+  {
+    alias: 'graines de sesame',
+    alimCode: '15010',
+    isPantryStaple: true,
+    notes: 'Correspond à "Sésame, graine".',
   },
 ];

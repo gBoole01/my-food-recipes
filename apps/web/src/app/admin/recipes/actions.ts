@@ -1,7 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import type { AdminRecipeCreate, AdminRecipeUpdate } from "@my-food-recipes/contracts";
+import type {
+  AdminRecipeCreate,
+  AdminRecipeUpdate,
+  IngredientAliasSuggestion,
+} from "@my-food-recipes/contracts";
 
 const BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000";
 const KEY = process.env.ADMIN_API_KEY ?? "";
@@ -59,4 +63,20 @@ export async function deleteRecipe(id: string): Promise<{ error?: string }> {
   const result = await adminFetch(`/api/admin/recipes/${id}`, "DELETE");
   if (!result.error) revalidatePath("/admin/recipes");
   return result;
+}
+
+export async function searchIngredientAliases(
+  search: string,
+): Promise<IngredientAliasSuggestion[]> {
+  if (search.trim().length < 2) return [];
+  try {
+    const res = await fetch(
+      `${BASE}/api/admin/recipes/ingredient-aliases?search=${encodeURIComponent(search)}`,
+      { headers: { "X-Admin-Key": KEY }, cache: "no-store" },
+    );
+    if (!res.ok) return [];
+    return res.json() as Promise<IngredientAliasSuggestion[]>;
+  } catch {
+    return [];
+  }
 }

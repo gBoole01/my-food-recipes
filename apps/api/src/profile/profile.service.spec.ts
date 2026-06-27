@@ -215,7 +215,7 @@ describe('ProfileService', () => {
 
       const result = await service.addMember({
         name: 'Léa',
-        primaryGoal: 'sante_cardio',
+        primaryGoal: 'stabilisation',
         dailyCaloriesTarget: 1800,
         diet: 'omnivore',
         secondaryDiets: [],
@@ -233,7 +233,7 @@ describe('ProfileService', () => {
       await expect(
         service.addMember({
           name: 'Léa',
-          primaryGoal: 'sante_cardio',
+          primaryGoal: 'stabilisation',
           dailyCaloriesTarget: 1800,
           diet: 'omnivore',
           secondaryDiets: [],

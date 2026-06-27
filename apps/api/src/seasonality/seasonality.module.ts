@@ -1,14 +1,12 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { FoodCategory } from '../nutrition/food-category.entity';
-import { Seasonality } from './seasonality.entity';
+import { NutritionModule } from '../nutrition/nutrition.module';
 import { SeasonalityController } from './seasonality.controller';
 import { SeasonalityService } from './seasonality.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Seasonality, FoodCategory])],
+  imports: [NutritionModule],
   controllers: [SeasonalityController],
   providers: [SeasonalityService],
-  exports: [TypeOrmModule, SeasonalityService],
+  exports: [SeasonalityService],
 })
 export class SeasonalityModule {}

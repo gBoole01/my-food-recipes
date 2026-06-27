@@ -30,7 +30,6 @@ export const PrimaryGoalSchema = z.enum([
   'perte_de_poids',
   'stabilisation',
   'prise_de_masse',
-  'sante_cardio',
 ]);
 export type PrimaryGoal = z.infer<typeof PrimaryGoalSchema>;
 
@@ -66,7 +65,6 @@ export const SecondaryDietSchema = z.enum([
   'cetogene',
   'low_carb',
   'paleo',
-  'sans_gluten',
 ]);
 export type SecondaryDiet = z.infer<typeof SecondaryDietSchema>;
 

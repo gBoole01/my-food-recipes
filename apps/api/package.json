@@ -21,9 +21,7 @@
     "seed:recipes": "ts-node scripts/seed-recipes.ts",
     "seed:nutrition": "ts-node scripts/import-food-nutrition.ts",
     "seed:ingredient-aliases": "ts-node scripts/seed-ingredient-aliases.ts",
-    "seed:seasonality": "ts-node scripts/seed-seasonality.ts",
-    "seed:micronutrient-targets": "ts-node scripts/seed-micronutrient-targets.ts",
-    "seed:pantry-staples": "ts-node scripts/seed-pantry-staples.ts"
+    "seed:micronutrient-targets": "ts-node scripts/seed-micronutrient-targets.ts"
   },
   "dependencies": {
     "@langchain/core": "^0.3.0",

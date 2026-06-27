@@ -7,6 +7,36 @@ export const IngredientSchema = z.object({
   category: z.string().min(1),
 });
 
+export const IngredientAliasSuggestionSchema = z.object({
+  id: z.string().uuid(),
+  alias: z.string(),
+  isPantryStaple: z.boolean(),
+  seasonalType: z.enum(['fruit', 'legume']).nullable(),
+  seasonalMonths: z.array(z.number().int().min(1).max(12)).nullable(),
+  foodNutritionId: z.string().uuid().nullable(),
+  foodNutritionName: z.string().nullable(),
+  categoryName: z.string().nullable(),
+});
+export type IngredientAliasSuggestion = z.infer<typeof IngredientAliasSuggestionSchema>;
+
+export const IngredientAliasListResponseSchema = z.object({
+  items: z.array(IngredientAliasSuggestionSchema),
+  total: z.number().int().nonnegative(),
+  page: z.number().int().positive(),
+  pageSize: z.number().int().positive(),
+});
+export type IngredientAliasListResponse = z.infer<typeof IngredientAliasListResponseSchema>;
+
+export const AdminIngredientInputSchema = IngredientSchema.extend({
+  aliasId: z.string().uuid().nullable().optional(),
+});
+export type AdminIngredientInput = z.infer<typeof AdminIngredientInputSchema>;
+
+export const AdminIngredientResponseSchema = IngredientSchema.extend({
+  aliasId: z.string().uuid().nullable(),
+});
+export type AdminIngredientResponse = z.infer<typeof AdminIngredientResponseSchema>;
+
 export const NutritionSchema = z.object({
   calories: z.number().nonnegative(),
   protein: z.number().nonnegative(),
@@ -46,7 +76,7 @@ export const AdminRecipeCreateSchema = z.object({
   prepTimeMinutes: z.number().int().positive(),
   cookTimeMinutes: z.number().int().nonnegative(),
   nutrition: NutritionSchema,
-  ingredients: z.array(IngredientSchema).min(1),
+  ingredients: z.array(AdminIngredientInputSchema).min(1),
   steps: z.array(z.string().min(1)).min(1),
   status: RecipeStatusSchema.optional().default('draft'),
 });
@@ -55,7 +85,8 @@ export type AdminRecipeCreate = z.infer<typeof AdminRecipeCreateSchema>;
 export const AdminRecipeUpdateSchema = AdminRecipeCreateSchema.partial();
 export type AdminRecipeUpdate = z.infer<typeof AdminRecipeUpdateSchema>;
 
-export const AdminRecipeResponseSchema = RecipeSchema.extend({
+export const AdminRecipeResponseSchema = RecipeSchema.omit({ ingredients: true }).extend({
   status: RecipeStatusSchema,
+  ingredients: z.array(AdminIngredientResponseSchema).min(1),
 });
 export type AdminRecipeResponse = z.infer<typeof AdminRecipeResponseSchema>;

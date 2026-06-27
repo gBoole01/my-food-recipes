@@ -5,34 +5,14 @@ import { useRouter } from "next/navigation";
 import type { AdminRecipeCreate, AdminRecipeResponse } from "@my-food-recipes/contracts";
 import { createRecipe, updateRecipe } from "@/app/admin/recipes/actions";
 import { Button } from "@/components/ui/Button";
+import { ALLERGEN_OPTIONS, DIET_OPTIONS, EQUIPMENT_OPTIONS, SECONDARY_DIET_OPTIONS } from "@/components/household/vocabulary";
+import { IngredientCombobox } from "@/components/admin/IngredientCombobox";
 
-const DIET_TAGS = ["omnivore", "vegetarien", "vegetalien", "paleo", "sans_gluten"];
-const DIET_LABELS: Record<string, string> = {
-  omnivore: "Omnivore",
-  vegetarien: "Végétarien",
-  vegetalien: "Végétalien",
-  paleo: "Paléo",
-  sans_gluten: "Sans gluten",
-};
-const ALLERGENS = [
-  "gluten", "lactose", "oeufs", "arachides",
-  "fruits_a_coque", "poisson", "crustaces", "soja", "sesame",
-];
-const ALLERGEN_LABELS: Record<string, string> = {
-  gluten: "Gluten",
-  lactose: "Lactose",
-  oeufs: "Œufs",
-  arachides: "Arachides",
-  fruits_a_coque: "Fruits à coque",
-  poisson: "Poisson",
-  crustaces: "Crustacés",
-  soja: "Soja",
-  sesame: "Sésame",
-};
-const APPLIANCES = ["Four", "Micro-ondes", "Mixeur", "Robot culinaire", "Wok", "Friteuse", "Autocuiseur"];
+const DIET_TAG_OPTIONS = [...DIET_OPTIONS, ...SECONDARY_DIET_OPTIONS];
 
 interface IngredientRow {
   name: string;
+  aliasId: string | null;
   quantity: number;
   unit: string;
   category: string;
@@ -68,7 +48,7 @@ const DEFAULT: FormState = {
   protein: 0,
   carbs: 0,
   fat: 0,
-  ingredients: [{ name: "", quantity: 100, unit: "g", category: "" }],
+  ingredients: [{ name: "", aliasId: null, quantity: 100, unit: "g", category: "" }],
   steps: [""],
 };
 
@@ -88,6 +68,7 @@ function fromInitialData(data: AdminRecipeResponse): FormState {
     fat: data.nutrition.fat,
     ingredients: data.ingredients.map((i) => ({
       name: i.name,
+      aliasId: i.aliasId,
       quantity: i.quantity,
       unit: i.unit,
       category: i.category,
@@ -140,7 +121,7 @@ export function RecipeForm({ mode, initialData, recipeId }: RecipeFormProps) {
   function setIngredient(
     index: number,
     key: keyof IngredientRow,
-    value: string | number,
+    value: string | number | null,
   ) {
     setForm((prev) => {
       const ingredients = [...prev.ingredients];
@@ -149,9 +130,35 @@ export function RecipeForm({ mode, initialData, recipeId }: RecipeFormProps) {
     });
   }
 
+  function selectIngredientAlias(
+    index: number,
+    name: string,
+    aliasId: string | null,
+    category: string | null,
+  ) {
+    setForm((prev) => {
+      const ingredients = [...prev.ingredients];
+      ingredients[index] = {
+        ...ingredients[index],
+        name,
+        aliasId,
+        ...(category !== null ? { category } : {}),
+      };
+      return { ...prev, ingredients };
+    });
+  }
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+
+    const unlinked = form.ingredients.filter((i) => i.aliasId === null);
+    if (unlinked.length > 0) {
+      setError(
+        `${unlinked.length} ingrédient(s) non lié(s) à CIQUAL : ${unlinked.map((i) => i.name || "(sans nom)").join(", ")}. Sélectionnez un ingrédient depuis la liste.`,
+      );
+      return;
+    }
 
     const payload: AdminRecipeCreate = {
       name: form.name,
@@ -168,7 +175,7 @@ export function RecipeForm({ mode, initialData, recipeId }: RecipeFormProps) {
         carbs: form.carbs,
         fat: form.fat,
       },
-      ingredients: form.ingredients,
+      ingredients: form.ingredients.map((i) => ({ ...i, aliasId: i.aliasId })),
       steps: form.steps.filter((s) => s.trim().length > 0),
     };
 
@@ -282,15 +289,15 @@ export function RecipeForm({ mode, initialData, recipeId }: RecipeFormProps) {
         <div>
           <p className={label}>Régime alimentaire</p>
           <div className="flex flex-wrap gap-x-4 gap-y-2">
-            {DIET_TAGS.map((tag) => (
-              <label key={tag} className="flex cursor-pointer items-center gap-1.5 text-sm">
+            {DIET_TAG_OPTIONS.map(({ value, label: lbl }) => (
+              <label key={value} className="flex cursor-pointer items-center gap-1.5 text-sm">
                 <input
                   type="checkbox"
-                  checked={form.dietTags.includes(tag)}
-                  onChange={() => toggleArray("dietTags", tag)}
+                  checked={form.dietTags.includes(value)}
+                  onChange={() => toggleArray("dietTags", value)}
                   className="h-4 w-4 accent-primary"
                 />
-                {DIET_LABELS[tag]}
+                {lbl}
               </label>
             ))}
           </div>
@@ -299,15 +306,15 @@ export function RecipeForm({ mode, initialData, recipeId }: RecipeFormProps) {
         <div>
           <p className={label}>Allergènes</p>
           <div className="flex flex-wrap gap-x-4 gap-y-2">
-            {ALLERGENS.map((a) => (
-              <label key={a} className="flex cursor-pointer items-center gap-1.5 text-sm">
+            {ALLERGEN_OPTIONS.map(({ value, label: lbl }) => (
+              <label key={value} className="flex cursor-pointer items-center gap-1.5 text-sm">
                 <input
                   type="checkbox"
-                  checked={form.allergens.includes(a)}
-                  onChange={() => toggleArray("allergens", a)}
+                  checked={form.allergens.includes(value)}
+                  onChange={() => toggleArray("allergens", value)}
                   className="h-4 w-4 accent-primary"
                 />
-                {ALLERGEN_LABELS[a]}
+                {lbl}
               </label>
             ))}
           </div>
@@ -316,15 +323,15 @@ export function RecipeForm({ mode, initialData, recipeId }: RecipeFormProps) {
         <div>
           <p className={label}>Appareils requis</p>
           <div className="flex flex-wrap gap-x-4 gap-y-2">
-            {APPLIANCES.map((appliance) => (
-              <label key={appliance} className="flex cursor-pointer items-center gap-1.5 text-sm">
+            {EQUIPMENT_OPTIONS.map(({ value, label: lbl }) => (
+              <label key={value} className="flex cursor-pointer items-center gap-1.5 text-sm">
                 <input
                   type="checkbox"
-                  checked={form.requiredAppliances.includes(appliance)}
-                  onChange={() => toggleArray("requiredAppliances", appliance)}
+                  checked={form.requiredAppliances.includes(value)}
+                  onChange={() => toggleArray("requiredAppliances", value)}
                   className="h-4 w-4 accent-primary"
                 />
-                {appliance}
+                {lbl}
               </label>
             ))}
           </div>
@@ -373,7 +380,7 @@ export function RecipeForm({ mode, initialData, recipeId }: RecipeFormProps) {
                 ...prev,
                 ingredients: [
                   ...prev.ingredients,
-                  { name: "", quantity: 100, unit: "g", category: "" },
+                  { name: "", aliasId: null, quantity: 100, unit: "g", category: "" },
                 ],
               }))
             }
@@ -384,20 +391,22 @@ export function RecipeForm({ mode, initialData, recipeId }: RecipeFormProps) {
         </div>
 
         <div className="flex flex-col gap-2">
-          <div className="grid grid-cols-[1fr_80px_70px_1fr_auto] gap-2 text-xs font-bold text-muted">
-            <span>Nom</span>
+          <div className="grid grid-cols-[2fr_80px_70px_1fr_auto] gap-2 text-xs font-bold text-muted">
+            <span>Ingrédient (CIQUAL)</span>
             <span>Qté</span>
             <span>Unité</span>
             <span>Catégorie</span>
             <span />
           </div>
           {form.ingredients.map((ing, i) => (
-            <div key={i} className="grid grid-cols-[1fr_80px_70px_1fr_auto] gap-2 items-center">
-              <input
-                className={input}
-                placeholder="Nom"
+            <div key={i} className="grid grid-cols-[2fr_80px_70px_1fr_auto] gap-2 items-start">
+              <IngredientCombobox
                 value={ing.name}
-                onChange={(e) => setIngredient(i, "name", e.target.value)}
+                aliasId={ing.aliasId}
+                onSelect={(name, aliasId, category) =>
+                  selectIngredientAlias(i, name, aliasId, category)
+                }
+                inputClassName={input}
                 required
               />
               <input
@@ -434,7 +443,7 @@ export function RecipeForm({ mode, initialData, recipeId }: RecipeFormProps) {
                   }))
                 }
                 disabled={form.ingredients.length === 1}
-                className="px-2 text-lg text-muted hover:text-ink disabled:opacity-30"
+                className="mt-2.5 px-2 text-lg text-muted hover:text-ink disabled:opacity-30"
                 aria-label="Supprimer l'ingrédient"
               >
                 ×

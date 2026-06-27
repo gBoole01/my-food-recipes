@@ -1,13 +1,28 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+import { useRouter } from "next/navigation";
 
 const STEPS = [
-  { title: "Bienvenue", description: "Une promesse claire, une seule action principale." },
-  { title: "Collecte par chat", description: "Régime, allergies, appareils, convives — via des puces rapides." },
-  { title: "Recettes", description: "Des cartes avec temps de préparation, nutrition et tags régime/allergènes." },
-  { title: "Liste de courses", description: "Groupée par rayon, cases à cocher, quantités ajustées aux convives." },
+  {
+    title: "Bienvenue",
+    description: "Une promesse claire, une seule action principale.",
+  },
+  {
+    title: "Collecte par chat",
+    description:
+      "Régime, allergies, appareils, convives — via des puces rapides.",
+  },
+  {
+    title: "Recettes",
+    description:
+      "Des cartes avec temps de préparation, nutrition et tags régime/allergènes.",
+  },
+  {
+    title: "Liste de courses",
+    description:
+      "Groupée par rayon, cases à cocher, quantités ajustées aux convives.",
+  },
 ];
 
 export default function HomePage() {
@@ -17,32 +32,38 @@ export default function HomePage() {
     <div className="flex flex-col gap-10">
       <section className="flex flex-col items-center gap-4 py-8 text-center">
         <div className="flex h-28 w-28 items-center justify-center rounded-full bg-primary-soft">
-          <svg width="56" height="56" viewBox="0 0 32 32" aria-hidden="true">
-            <g stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round">
-              <line x1="9" y1="25" x2="22" y2="8" />
-              <line x1="23" y1="25" x2="11" y2="9" />
+          <svg
+            height="56"
+            width="56"
+            preserveAspectRatio="xMidYMid meet"
+            viewBox="0 0 500 500"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g transform="matrix(.1 0 0 -.1 0 500)" fill="#C25A41">
+              <path d="m4644 4116c-183-123-301-402-424-1001-106-513-129-590-238-797-33-62-107-204-165-315-123-237-172-310-279-416-166-163-345-257-578-303-113-22-321-15-432 15-300 82-556 286-692 551-88 173-123 301-132 485-18 337 109 663 344 887 82 77 174 141 290 198 125 61 228 87 387 96 304 18 567-78 803-293 120-110 233-288 280-443 60-198 54-185 88-188 20-2 36 4 49 18 16 18 17 27 8 78-14 76-76 241-121 322-137 251-381 462-639 554-285 101-588 94-858-21-378-161-657-517-730-930-19-111-20-332-1-438 46-259 178-502 375-693 89-85 177-147 299-207 165-83 309-115 507-115 196 0 347 37 525 128 124 63 186 108 301 219 106 102 178 202 262 363 35 69 91 175 122 235 32 61 77 146 100 190 89 170 140 331 196 617 112 574 209 880 324 1025 12 14 26 23 32 20 8-5 10-82 7-239-10-613-24-1964-24-2399 0-321-4-497-11-517-22-63-104-83-156-38-27 23-27 26-26 117 1 52 7 159 13 239 30 419 40 587 52 808l12 242-22 22c-18 18-26 20-49 12-24-8-36-31-95-174-171-416-286-606-480-797-158-156-259-228-433-313-190-92-342-133-548-149-434-33-852 122-1173 436-205 201-325 392-425 680-93 267-104 606-30 917 25 101 106 304 161 399 208 364 534 632 910 751 187 59 264 69 500 63 229-6 307-20 476-82 231-85 403-193 574-359 102-98 131-113 164-80 33 32 19 60-66 143-100 95-182 163-263 217-328 220-754 321-1124 269-208-30-336-67-506-150-318-154-580-400-752-705-80-142-99-185-144-322-45-138-65-221-79-338-13-109-13-337 0-437 83-627 499-1175 1065-1402 332-133 715-153 1045-55 206 61 381 151 570 295 223 170 411 414 541 704 37 82 65 101 55 38-3-21-12-150-21-288-9-137-20-308-25-379-16-214-13-299 11-343 46-83 84-105 179-105 101 0 140 25 182 117l23 50 6 1055c4 580 10 1325 14 1655 8 561 7 602-9 618-25 25-45 21-102-17z" />
+              <path d="m285 4120c-17-19-18-50-20-453-1-237 2-473 6-524 10-115 46-197 124-280 30-32 55-62 55-66 0-5 6-5 13-1 6 4 9 4 5-1-4-4-1-20 8-36 30-58 34-126 24-382-5-139-14-409-20-602-6-192-15-486-21-652-11-298-11-302 11-350 43-97 99-135 204-136 84-1 118 14 169 74 53 61 58 102 47 351-6 117-17 350-25 518-44 920-48 1034-36 1098 13 68 42 123 100 187 20 22 51 66 69 97 58 101 62 141 62 663 0 410-2 473-16 493-17 25-50 28-77 8-17-13-18-37-18-368 0-194-3-429-8-523-9-195-11-201-102-307-68-78-95-133-115-229-12-60-12-114 1-421 8-194 20-461 25-593 6-132 17-375 25-540 7-165 11-312 8-328-17-84-150-104-199-29-19 29-20 128-4 572 17 503 32 1023 33 1185 1 132-2 169-17 209-22 61-65 126-129 196-88 96-81 50-87 638-5 504-6 524-24 538-27 19-50 18-71-6z" />
+              <path d="m506 4118c-24-34-24-792 0-826 18-27 55-29 77-4 15 17 17 60 17 420 0 351-2 403-16 416-22 23-60 20-78-6z" />
+              <path d="m744 4126c-18-14-19-32-22-393-2-208 0-393 3-411 4-22 14-36 29-42 32-12 69-2 62 17-3 8-1 11 4 8 7-4 10 132 10 392 0 345-2 402-16 421-17 25-42 28-70 8z" />
             </g>
-            <circle
-              cx="16"
-              cy="16"
-              r="8.5"
-              fill="var(--color-surface)"
-              stroke="var(--color-primary)"
-              strokeWidth="2"
-            />
-            <circle cx="16" cy="16" r="4" fill="none" stroke="var(--color-accent)" strokeWidth="1.5" />
           </svg>
         </div>
-        <h1 className="font-head text-4xl font-bold tracking-tight">Bien manger, sans y penser.</h1>
+        <h1 className="font-head text-4xl font-bold tracking-tight">
+          Bien manger, sans y penser.
+        </h1>
         <p className="max-w-md text-muted">
-          Répondez à quelques questions, recevez des recettes diététiques sur mesure et votre liste de
-          courses, consolidée et proportionnée au nombre de convives.
+          Répondez à quelques questions, recevez des recettes diététiques sur
+          mesure et votre liste de courses, consolidée et proportionnée au
+          nombre de convives.
         </p>
-        <Button onClick={() => router.push("/chat")}>Composer mes recettes</Button>
+        <Button onClick={() => router.push("/chat")}>
+          Composer mes recettes
+        </Button>
       </section>
 
       <section>
-        <h2 className="mb-4 font-head text-xl font-bold">Le flux conversationnel</h2>
+        <h2 className="mb-4 font-head text-xl font-bold">
+          Le flux conversationnel
+        </h2>
         <ol className="flex flex-col gap-4">
           {STEPS.map((step, index) => (
             <li key={step.title} className="flex gap-3">
